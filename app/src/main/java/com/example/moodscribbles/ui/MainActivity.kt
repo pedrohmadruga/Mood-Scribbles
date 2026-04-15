@@ -1,4 +1,4 @@
-package com.example.moodscribbles
+package com.example.moodscribbles.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
