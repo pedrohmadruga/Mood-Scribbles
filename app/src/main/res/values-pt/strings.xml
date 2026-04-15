@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MoodScribbles</string>
+    <string name="home_subtitle">Acompanhe suas emoções todos os dias.</string>
+    <string name="home_create_first_entry">Criar primeiro registro</string>
+</resources>

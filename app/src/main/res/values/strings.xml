@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MoodScribbles</string>
+    <string name="home_subtitle">Track your emotions every day.</string>
+    <string name="home_create_first_entry">Create first entry</string>
 </resources>
