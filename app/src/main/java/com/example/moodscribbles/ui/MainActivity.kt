@@ -20,17 +20,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.theme.MoodScribblesTheme
+import org.koin.androidx.compose.KoinAndroidContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MoodScribblesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            KoinAndroidContext {
+                MoodScribblesTheme {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                        HomeScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
