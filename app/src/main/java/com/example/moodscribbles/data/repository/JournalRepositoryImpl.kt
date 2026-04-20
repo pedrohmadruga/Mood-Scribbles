@@ -10,9 +10,11 @@ import com.example.moodscribbles.data.local.entity.EmotionEntity
 import com.example.moodscribbles.data.local.entity.EntryTagCrossRef
 import com.example.moodscribbles.data.local.entity.JournalEntryEntity
 import com.example.moodscribbles.data.local.entity.TagEntity
+import com.example.moodscribbles.data.mapper.EmotionMapper
+import com.example.moodscribbles.data.mapper.JournalEntryMapper
+import com.example.moodscribbles.data.mapper.TagMapper
 import com.example.moodscribbles.domain.Emotion
 import com.example.moodscribbles.domain.JournalEntry
-import com.example.moodscribbles.domain.Mood
 import com.example.moodscribbles.domain.Tag
 import com.example.moodscribbles.domain.repository.JournalRepository
 import java.time.Instant
@@ -47,7 +49,8 @@ class JournalRepositoryImpl(
     override suspend fun insertEntry(entry: JournalEntry): Long = appDatabase.withTransaction {
         val emotionId = resolveEmotionId(entry.emotion)
         val entityId = journalDao.insert(
-            entry.toEntity(
+            JournalEntryMapper.toEntity(
+                domain = entry,
                 emotionId = emotionId,
                 updatedAt = entry.updatedAt,
             ),
@@ -60,7 +63,8 @@ class JournalRepositoryImpl(
     override suspend fun updateEntry(entry: JournalEntry) = appDatabase.withTransaction {
         val emotionId = resolveEmotionId(entry.emotion)
         journalDao.update(
-            entry.toEntity(
+            JournalEntryMapper.toEntity(
+                domain = entry,
                 emotionId = emotionId,
                 updatedAt = Instant.now(),
             ),
@@ -129,56 +133,20 @@ class JournalRepositoryImpl(
         return resolvedIds.toList()
     }
 
-    // mapper to create domain object(JournalEntry) from entity(JournalEntryEntity)
     private suspend fun toDomain(entity: JournalEntryEntity): JournalEntry {
-        val emotion = requireNotNull(emotionDao.getById(entity.emotionId)) {
+        val emotionEntity = requireNotNull(emotionDao.getById(entity.emotionId)) {
             "Emotion not found for id=${entity.emotionId}."
-        }.toDomain()
+        }
+        val emotion = EmotionMapper.toDomain(emotionEntity)
 
         val tagIds = entryTagCrossRefDao.getTagIdsByEntryId(entity.id)
         val tagsById = tagDao.getByIds(tagIds).associateBy { it.id }
-        val tags = tagIds.mapNotNull { tagsById[it] }.map { it.toDomain() }
+        val tags = tagIds.mapNotNull { tagsById[it] }.map { TagMapper.toDomain(it) }
 
-        return JournalEntry(
-            id = entity.id,
-            date = LocalDate.parse(entity.date),
-            mood = entity.mood.toMood(),
-            energyLevel = entity.energyLevel,
-            title = entity.title,
-            description = entity.description,
+        return JournalEntryMapper.toDomain(
+            entity = entity,
             emotion = emotion,
             tags = tags,
-            createdAt = Instant.ofEpochMilli(entity.createdAtEpochMillis),
-            updatedAt = Instant.ofEpochMilli(entity.updatedAtEpochMillis),
         )
     }
-
-    // Converts domain object to DB row format.
-    private fun JournalEntry.toEntity(
-        emotionId: Long,
-        updatedAt: Instant,
-    ): JournalEntryEntity = JournalEntryEntity(
-        id = id,
-        date = date.toString(),
-        mood = mood.name,
-        emotionId = emotionId,
-        energyLevel = energyLevel,
-        title = title,
-        description = description,
-        createdAtEpochMillis = createdAt.toEpochMilli(),
-        updatedAtEpochMillis = updatedAt.toEpochMilli(),
-    )
-
-    private fun EmotionEntity.toDomain(): Emotion = Emotion(
-        id = id,
-        name = name,
-    )
-
-    private fun TagEntity.toDomain(): Tag = Tag(
-        id = id,
-        name = name,
-    )
-
-    // Safe fallback avoids crash if DB has an unexpected enum string.
-    private fun String.toMood(): Mood = Mood.entries.firstOrNull { it.name == this } ?: Mood.NEUTRAL
 }
