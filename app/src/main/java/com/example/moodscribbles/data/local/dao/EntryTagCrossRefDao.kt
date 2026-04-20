@@ -19,6 +19,9 @@ interface EntryTagCrossRefDao {
     @Query("SELECT tag_id FROM entry_tag_cross_ref WHERE entry_id = :entryId")
     fun observeTagIdsByEntryId(entryId: Long): Flow<List<Long>>
 
+    @Query("SELECT tag_id FROM entry_tag_cross_ref WHERE entry_id = :entryId")
+    suspend fun getTagIdsByEntryId(entryId: Long): List<Long>
+
     @Query("DELETE FROM entry_tag_cross_ref WHERE entry_id = :entryId")
     suspend fun deleteAllByEntryId(entryId: Long)
 }
