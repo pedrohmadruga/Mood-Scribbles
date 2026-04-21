@@ -4,6 +4,9 @@ import androidx.room.Room
 import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
 import com.example.moodscribbles.domain.repository.JournalRepository
+import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
+import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
+import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -33,4 +36,8 @@ val appModule = module {
             entryTagCrossRefDao = get(),
         )
     }
+
+    factory { CreateJournalEntryUseCase(journalRepository = get()) }
+    factory { UpdateJournalEntryUseCase(journalRepository = get()) }
+    factory { GetJournalEntryByDateUseCase(journalRepository = get()) }
 }
