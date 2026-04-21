@@ -29,7 +29,23 @@ class JournalViewModel(
         loadForDate(LocalDate.now()) // loads the journal entry for the current date
     }
 
-    fun loadForDate(date: LocalDate) {
+    fun onEvent(event: JournalUiEvent) {
+        when (event) {
+            is JournalUiEvent.DateSelected -> loadForDate(event.date)
+            is JournalUiEvent.MoodSelected -> setMood(event.mood)
+            is JournalUiEvent.EnergyChanged -> setEnergyLevel(event.level)
+            is JournalUiEvent.TitleChanged -> setTitle(event.value)
+            is JournalUiEvent.DescriptionChanged -> setDescription(event.value)
+            is JournalUiEvent.EmotionLabelChanged -> setEmotionLabel(event.label)
+            is JournalUiEvent.EmotionSelected -> setEmotion(event.emotion)
+            is JournalUiEvent.TagsChanged -> setTags(event.tags)
+            JournalUiEvent.SaveClicked -> save()
+            JournalUiEvent.ReloadFromRepositoryClicked -> reloadFromRepository()
+            JournalUiEvent.ClearSaveErrorClicked -> clearSaveError()
+        }
+    }
+
+    private fun loadForDate(date: LocalDate) {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(isLoading = true, date = date, saveError = null)
@@ -45,31 +61,44 @@ class JournalViewModel(
         }
     }
 
-    fun setMood(mood: Mood) {
+    private fun reloadFromRepository() {
+        loadForDate(_uiState.value.date)
+    }
+
+    private fun setMood(mood: Mood) {
         _uiState.update { it.copy(mood = mood, saveError = null) }
     }
 
-    fun setEnergyLevel(level: Int) {
+    private fun setEnergyLevel(level: Int) {
         _uiState.update { it.copy(energyLevel = level, saveError = null) }
     }
 
-    fun setTitle(value: String) {
+    private fun setTitle(value: String) {
         _uiState.update { it.copy(title = value, saveError = null) }
     }
 
-    fun setDescription(value: String) {
+    private fun setDescription(value: String) {
         _uiState.update { it.copy(description = value, saveError = null) }
     }
 
-    fun setEmotion(emotion: Emotion) {
+    private fun setEmotionLabel(label: String) {
+        _uiState.update { current ->
+            current.copy(
+                emotion = current.emotion.copy(name = label),
+                saveError = null,
+            )
+        }
+    }
+
+    private fun setEmotion(emotion: Emotion) {
         _uiState.update { it.copy(emotion = emotion, saveError = null) }
     }
 
-    fun setTags(tags: List<Tag>) {
+    private fun setTags(tags: List<Tag>) {
         _uiState.update { it.copy(tags = tags, saveError = null) }
     }
 
-    fun clearSaveError() {
+    private fun clearSaveError() {
         _uiState.update { it.copy(saveError = null) }
     }
 
@@ -80,7 +109,7 @@ class JournalViewModel(
     4. Treats the result of the save operation
     5. Updates the UI state with the result of the save operation
     */
-    fun save() {
+    private fun save() {
         viewModelScope.launch {
             val snapshot = _uiState.value
             if (snapshot.isLoading || snapshot.isSaving) return@launch // If it's loading or saving, do nothing

@@ -2,4 +2,27 @@
     <string name="app_name">MoodScribbles</string>
     <string name="home_subtitle">Acompanhe suas emoções todos os dias.</string>
     <string name="home_create_first_entry">Criar primeiro registro</string>
+    <string name="journal_screen_title">Diário</string>
+    <string name="journal_navigate_up">Voltar</string>
+    <string name="journal_date_previous">Dia anterior</string>
+    <string name="journal_date_next">Dia seguinte</string>
+    <string name="journal_mood_label">Humor</string>
+    <string name="journal_energy_label">Energia: %1$d</string>
+    <string name="journal_title_label">Título</string>
+    <string name="journal_description_label">Notas</string>
+    <string name="journal_emotion_label">Emoção</string>
+    <string name="journal_save_create">Guardar</string>
+    <string name="journal_save_update">Atualizar</string>
+    <string name="journal_reload_from_repository">Recarregar</string>
+    <string name="journal_dismiss_error">Fechar</string>
+    <string name="journal_error_already_exists">Já existe um registo para este dia.</string>
+    <string name="journal_error_not_found">Não foi encontrado registo para este dia.</string>
+    <string name="journal_error_energy">A energia deve estar entre 0 e 100 (atual: %1$d).</string>
+    <string name="journal_error_updated_before_created">A data de atualização não pode ser anterior à de criação.</string>
+    <string name="journal_error_id_mismatch">O id do registo (%1$d) não coincide com o da base (%2$d).</string>
+    <string name="mood_very_sad">Muito triste</string>
+    <string name="mood_sad">Triste</string>
+    <string name="mood_neutral">Neutro</string>
+    <string name="mood_happy">Feliz</string>
+    <string name="mood_very_happy">Muito feliz</string>
 </resources>

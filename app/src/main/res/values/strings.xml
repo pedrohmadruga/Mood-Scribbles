@@ -2,4 +2,27 @@
     <string name="app_name">MoodScribbles</string>
     <string name="home_subtitle">Track your emotions every day.</string>
     <string name="home_create_first_entry">Create first entry</string>
+    <string name="journal_screen_title">Journal</string>
+    <string name="journal_navigate_up">Back</string>
+    <string name="journal_date_previous">Previous day</string>
+    <string name="journal_date_next">Next day</string>
+    <string name="journal_mood_label">Mood</string>
+    <string name="journal_energy_label">Energy: %1$d</string>
+    <string name="journal_title_label">Title</string>
+    <string name="journal_description_label">Notes</string>
+    <string name="journal_emotion_label">Emotion</string>
+    <string name="journal_save_create">Save</string>
+    <string name="journal_save_update">Update</string>
+    <string name="journal_reload_from_repository">Reload</string>
+    <string name="journal_dismiss_error">Dismiss</string>
+    <string name="journal_error_already_exists">An entry already exists for this day.</string>
+    <string name="journal_error_not_found">No entry found for this day.</string>
+    <string name="journal_error_energy">Energy must be between 0 and 100 (current: %1$d).</string>
+    <string name="journal_error_updated_before_created">Updated time cannot be before created time.</string>
+    <string name="journal_error_id_mismatch">Entry id (%1$d) does not match the stored row (%2$d).</string>
+    <string name="mood_very_sad">Very sad</string>
+    <string name="mood_sad">Sad</string>
+    <string name="mood_neutral">Neutral</string>
+    <string name="mood_happy">Happy</string>
+    <string name="mood_very_happy">Very happy</string>
 </resources>
