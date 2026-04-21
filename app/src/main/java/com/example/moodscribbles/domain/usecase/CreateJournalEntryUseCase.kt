@@ -10,14 +10,13 @@ class CreateJournalEntryUseCase(
 ) {
 
     suspend operator fun invoke(entry: JournalEntry): Result {
-        val violations = JournalEntryRules.validate(entry)
+        val existingForDate = journalRepository.getEntryByDate(entry.date)
+        val violations = JournalEntryRules.validateForCreate(entry, existingForDate)
         if (violations.isNotEmpty()) {
+            if (JournalEntryRules.isOnlyDuplicateForDate(violations)) { // if the entry already exists for the date, return an AlreadyExistsForDate error
+                return Result.AlreadyExistsForDate
+            }
             return Result.ValidationError(violations)
-        }
-
-        val existingEntry = journalRepository.getEntryByDate(entry.date)
-        if (existingEntry != null) {
-            return Result.AlreadyExistsForDate
         }
 
         val createdEntryId = journalRepository.insertEntry(entry)

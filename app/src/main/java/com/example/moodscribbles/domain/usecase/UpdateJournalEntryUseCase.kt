@@ -11,12 +11,16 @@ class UpdateJournalEntryUseCase(
 ) {
 
     suspend operator fun invoke(entry: JournalEntry): Result {
-        val violations = JournalEntryRules.validate(entry)
+        val existingForDate = journalRepository.getEntryByDate(entry.date)
+        val violations = JournalEntryRules.validateForUpdate(entry, existingForDate)
         if (violations.isNotEmpty()) {
+            if (JournalEntryRules.isOnlyNotFoundForDate(violations)) {
+                return Result.NotFoundForDate
+            }
             return Result.ValidationError(violations)
         }
 
-        val existingEntry = journalRepository.getEntryByDate(entry.date)?: return Result.NotFoundForDate // if the entry is not found, return a NotFoundForDate error
+        val existingEntry = existingForDate!! // if the existingForDate is null, throw a KotlinNullPointerException (Kotlin's way of handling nulls)
 
         val entryToUpdate = entry.copy(
             id = existingEntry.id,
