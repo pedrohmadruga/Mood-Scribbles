@@ -7,7 +7,9 @@ import com.example.moodscribbles.domain.repository.JournalRepository
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
 import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
 import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
+import com.example.moodscribbles.ui.journal.JournalViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 /**
@@ -40,4 +42,12 @@ val appModule = module {
     factory { CreateJournalEntryUseCase(journalRepository = get()) }
     factory { UpdateJournalEntryUseCase(journalRepository = get()) }
     factory { GetJournalEntryByDateUseCase(journalRepository = get()) }
+
+    viewModel {
+        JournalViewModel(
+            getJournalEntryByDate = get(),
+            createJournalEntry = get(),
+            updateJournalEntry = get(),
+        )
+    }
 }
