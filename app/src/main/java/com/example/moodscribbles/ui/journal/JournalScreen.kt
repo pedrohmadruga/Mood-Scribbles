@@ -36,6 +36,7 @@ import com.example.moodscribbles.domain.Emotion
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.JournalEntryRuleViolation
 import com.example.moodscribbles.domain.Mood
+import com.example.moodscribbles.domain.Tag
 import org.koin.androidx.compose.koinViewModel
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -133,6 +134,15 @@ fun JournalScreen(
                         selectedEmotionName = uiState.emotion.name,
                         options = uiState.emotionOptions,
                         onEmotionSelected = { onEvent(JournalUiEvent.EmotionSelected(it)) },
+                    )
+                    TagsSection(
+                        suggestions = uiState.tagSuggestions,
+                        selectedTags = uiState.tags,
+                        newTagInput = uiState.newTagInput,
+                        onNewTagInputChanged = { onEvent(JournalUiEvent.NewTagInputChanged(it)) },
+                        onSuggestedTagToggled = { onEvent(JournalUiEvent.SuggestedTagToggled(it)) },
+                        onSelectedTagRemoved = { onEvent(JournalUiEvent.SelectedTagRemoved(it)) },
+                        onAddTypedTagClicked = { onEvent(JournalUiEvent.AddTypedTagClicked) },
                     )
                     uiState.saveError?.let { error ->
                         JournalSaveErrorBlock(error = error)
@@ -262,10 +272,95 @@ private fun EmotionRow(
             FilterChip(
                 selected = isSelected,
                 onClick = { onEmotionSelected(emotion) },
-                label = { Text(text = emotion.name) },
+                label = { Text(text = localizedEmotionLabel(emotion.name)) },
             )
         }
     }
+}
+
+@Composable
+private fun TagsSection(
+    suggestions: List<Tag>,
+    selectedTags: List<Tag>,
+    newTagInput: String,
+    onNewTagInputChanged: (String) -> Unit,
+    onSuggestedTagToggled: (Tag) -> Unit,
+    onSelectedTagRemoved: (Tag) -> Unit,
+    onAddTypedTagClicked: () -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.journal_tags_label),
+        style = MaterialTheme.typography.labelLarge,
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        suggestions.forEach { suggestion ->
+            val isSelected = selectedTags.any { it.name.equals(suggestion.name, ignoreCase = true) }
+            FilterChip(
+                selected = isSelected,
+                onClick = { onSuggestedTagToggled(suggestion) },
+                label = { Text(text = localizedSuggestedTagLabel(suggestion.name)) },
+            )
+        }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedTextField(
+            value = newTagInput,
+            onValueChange = onNewTagInputChanged,
+            modifier = Modifier.weight(1f),
+            label = { Text(stringResource(R.string.journal_new_tag_label)) },
+            singleLine = true,
+        )
+        Button(onClick = onAddTypedTagClicked) {
+            Text(text = stringResource(R.string.journal_add_tag))
+        }
+    }
+    if (selectedTags.isNotEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            selectedTags.forEach { tag ->
+                FilterChip(
+                    selected = true,
+                    onClick = { onSelectedTagRemoved(tag) },
+                    label = { Text(text = localizedSuggestedTagLabel(tag.name)) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun localizedEmotionLabel(rawName: String): String = when (rawName.trim().lowercase()) {
+    "happy" -> stringResource(R.string.journal_emotion_happy)
+    "content" -> stringResource(R.string.journal_emotion_content)
+    "neutral" -> stringResource(R.string.journal_emotion_neutral)
+    "anxious" -> stringResource(R.string.journal_emotion_anxious)
+    "sad" -> stringResource(R.string.journal_emotion_sad)
+    "frustrated" -> stringResource(R.string.journal_emotion_frustrated)
+    else -> rawName
+}
+
+@Composable
+private fun localizedSuggestedTagLabel(rawName: String): String = when (rawName.trim().lowercase()) {
+    "work" -> stringResource(R.string.journal_tag_work)
+    "family" -> stringResource(R.string.journal_tag_family)
+    "health" -> stringResource(R.string.journal_tag_health)
+    "friends" -> stringResource(R.string.journal_tag_friends)
+    "study" -> stringResource(R.string.journal_tag_study)
+    "exercise" -> stringResource(R.string.journal_tag_exercise)
+    else -> rawName
 }
 
 @Composable

@@ -19,6 +19,8 @@ data class JournalUiState(
     val description: String = "",
     val emotion: Emotion = Emotion(Emotion.UNSAVED_ID, ""),
     val emotionOptions: List<Emotion> = defaultEmotionOptions(),
+    val tagSuggestions: List<Tag> = defaultTagSuggestions(),
+    val newTagInput: String = "",
     val tags: List<Tag> = emptyList(),
     val entryId: Long = JournalEntry.UNSAVED_ID,
     val createdAt: Instant = Instant.now(),
@@ -29,12 +31,21 @@ data class JournalUiState(
 }
 
 internal fun defaultEmotionOptions(): List<Emotion> = listOf(
-    Emotion(Emotion.UNSAVED_ID, "Happy"),
-    Emotion(Emotion.UNSAVED_ID, "Content"),
-    Emotion(Emotion.UNSAVED_ID, "Neutral"),
-    Emotion(Emotion.UNSAVED_ID, "Anxious"),
-    Emotion(Emotion.UNSAVED_ID, "Sad"),
-    Emotion(Emotion.UNSAVED_ID, "Frustrated"),
+    Emotion(Emotion.UNSAVED_ID, "happy"),
+    Emotion(Emotion.UNSAVED_ID, "content"),
+    Emotion(Emotion.UNSAVED_ID, "neutral"),
+    Emotion(Emotion.UNSAVED_ID, "anxious"),
+    Emotion(Emotion.UNSAVED_ID, "sad"),
+    Emotion(Emotion.UNSAVED_ID, "frustrated"),
+)
+
+internal fun defaultTagSuggestions(): List<Tag> = listOf(
+    Tag(Tag.UNSAVED_ID, "work"),
+    Tag(Tag.UNSAVED_ID, "family"),
+    Tag(Tag.UNSAVED_ID, "health"),
+    Tag(Tag.UNSAVED_ID, "friends"),
+    Tag(Tag.UNSAVED_ID, "study"),
+    Tag(Tag.UNSAVED_ID, "exercise"),
 )
 
 // represents the error that can occur when saving the journal entry
@@ -72,6 +83,8 @@ internal fun JournalEntry.toUiState(isLoading: Boolean = false, isSaving: Boolea
         description = description.orEmpty(),
         emotion = emotion,
         emotionOptions = defaultEmotionOptions(),
+        tagSuggestions = defaultTagSuggestions(),
+        newTagInput = "",
         tags = tags,
         entryId = id,
         createdAt = createdAt,

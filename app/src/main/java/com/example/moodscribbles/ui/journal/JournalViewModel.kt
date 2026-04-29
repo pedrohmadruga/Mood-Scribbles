@@ -37,7 +37,10 @@ class JournalViewModel(
             is JournalUiEvent.TitleChanged -> setTitle(event.value)
             is JournalUiEvent.DescriptionChanged -> setDescription(event.value)
             is JournalUiEvent.EmotionSelected -> setEmotion(event.emotion)
-            is JournalUiEvent.TagsChanged -> setTags(event.tags)
+            is JournalUiEvent.NewTagInputChanged -> setNewTagInput(event.value)
+            is JournalUiEvent.SuggestedTagToggled -> toggleSuggestedTag(event.tag)
+            is JournalUiEvent.SelectedTagRemoved -> removeSelectedTag(event.tag)
+            JournalUiEvent.AddTypedTagClicked -> addTypedTag()
             JournalUiEvent.SaveClicked -> save()
             JournalUiEvent.ReloadFromRepositoryClicked -> reloadFromRepository()
             JournalUiEvent.ClearSaveErrorClicked -> clearSaveError()
@@ -91,8 +94,47 @@ class JournalViewModel(
         _uiState.update { it.copy(emotion = emotion, saveError = null) }
     }
 
-    private fun setTags(tags: List<Tag>) {
-        _uiState.update { it.copy(tags = tags, saveError = null) }
+    private fun setNewTagInput(value: String) {
+        _uiState.update { it.copy(newTagInput = value, saveError = null) }
+    }
+
+    private fun toggleSuggestedTag(tag: Tag) {
+        _uiState.update { current ->
+            val normalized = normalizeTagName(tag.name) ?: return@update current
+            val alreadySelected = current.tags.any { it.name.equals(normalized, ignoreCase = true) }
+            val updated = if (alreadySelected) {
+                current.tags.filterNot { it.name.equals(normalized, ignoreCase = true) }
+            } else {
+                current.tags + Tag(Tag.UNSAVED_ID, normalized)
+            }
+            current.copy(tags = updated, saveError = null)
+        }
+    }
+
+    private fun removeSelectedTag(tag: Tag) {
+        _uiState.update { current ->
+            current.copy(
+                tags = current.tags.filterNot { it.name.equals(tag.name, ignoreCase = true) },
+                saveError = null,
+            )
+        }
+    }
+
+    private fun addTypedTag() {
+        _uiState.update { current ->
+            val normalized = normalizeTagName(current.newTagInput)
+                ?: return@update current.copy(newTagInput = "", saveError = null)
+            val exists = current.tags.any { it.name.equals(normalized, ignoreCase = true) }
+            if (exists) {
+                current.copy(newTagInput = "", saveError = null)
+            } else {
+                current.copy(
+                    tags = current.tags + Tag(Tag.UNSAVED_ID, normalized),
+                    newTagInput = "",
+                    saveError = null,
+                )
+            }
+        }
     }
 
     private fun clearSaveError() {
@@ -180,5 +222,11 @@ class JournalViewModel(
         if (selectedName.isBlank()) return options
         val alreadyListed = options.any { it.name.equals(selectedName, ignoreCase = true) }
         return if (alreadyListed) options else options + selectedEmotion.copy(name = selectedName)
+    }
+
+    private fun normalizeTagName(raw: String): String? {
+        val value = raw.trim()
+        if (value.isBlank()) return null
+        return value.lowercase()
     }
 }
