@@ -18,6 +18,7 @@ data class JournalUiState(
     val title: String = "",
     val description: String = "",
     val emotion: Emotion = Emotion(Emotion.UNSAVED_ID, ""),
+    val emotionOptions: List<Emotion> = defaultEmotionOptions(),
     val tags: List<Tag> = emptyList(),
     val entryId: Long = JournalEntry.UNSAVED_ID,
     val createdAt: Instant = Instant.now(),
@@ -26,6 +27,15 @@ data class JournalUiState(
 ) {
     val isExistingEntry: Boolean get() = entryId != JournalEntry.UNSAVED_ID
 }
+
+internal fun defaultEmotionOptions(): List<Emotion> = listOf(
+    Emotion(Emotion.UNSAVED_ID, "Happy"),
+    Emotion(Emotion.UNSAVED_ID, "Content"),
+    Emotion(Emotion.UNSAVED_ID, "Neutral"),
+    Emotion(Emotion.UNSAVED_ID, "Anxious"),
+    Emotion(Emotion.UNSAVED_ID, "Sad"),
+    Emotion(Emotion.UNSAVED_ID, "Frustrated"),
+)
 
 // represents the error that can occur when saving the journal entry
 sealed interface JournalSaveError {
@@ -61,6 +71,7 @@ internal fun JournalEntry.toUiState(isLoading: Boolean = false, isSaving: Boolea
         title = title.orEmpty(),
         description = description.orEmpty(),
         emotion = emotion,
+        emotionOptions = defaultEmotionOptions(),
         tags = tags,
         entryId = id,
         createdAt = createdAt,
@@ -77,7 +88,7 @@ internal fun emptyDraftUiState(date: LocalDate, now: Instant = Instant.now()): J
         energyLevel = 50,
         title = null,
         description = null,
-        emotion = Emotion(Emotion.UNSAVED_ID, ""),
+        emotion = defaultEmotionOptions().firstOrNull() ?: Emotion(Emotion.UNSAVED_ID, ""),
         tags = emptyList(),
         now = now,
     ).toUiState(isLoading = false)

@@ -36,7 +36,6 @@ class JournalViewModel(
             is JournalUiEvent.EnergyChanged -> setEnergyLevel(event.level)
             is JournalUiEvent.TitleChanged -> setTitle(event.value)
             is JournalUiEvent.DescriptionChanged -> setDescription(event.value)
-            is JournalUiEvent.EmotionLabelChanged -> setEmotionLabel(event.label)
             is JournalUiEvent.EmotionSelected -> setEmotion(event.emotion)
             is JournalUiEvent.TagsChanged -> setTags(event.tags)
             JournalUiEvent.SaveClicked -> save()
@@ -55,7 +54,14 @@ class JournalViewModel(
             _uiState.update { current ->
                 when (entry) {
                     null -> emptyDraftUiState(date, now).copy(isSaving = current.isSaving)
-                    else -> entry.toUiState(isLoading = false, isSaving = current.isSaving)
+                    else -> {
+                        val base = entry.toUiState(isLoading = false, isSaving = current.isSaving)
+                        val options = ensureEmotionInOptions(
+                            selectedEmotion = entry.emotion,
+                            options = base.emotionOptions,
+                        )
+                        base.copy(emotionOptions = options)
+                    }
                 }
             }
         }
@@ -79,15 +85,6 @@ class JournalViewModel(
 
     private fun setDescription(value: String) {
         _uiState.update { it.copy(description = value, saveError = null) }
-    }
-
-    private fun setEmotionLabel(label: String) {
-        _uiState.update { current ->
-            current.copy(
-                emotion = current.emotion.copy(name = label),
-                saveError = null,
-            )
-        }
     }
 
     private fun setEmotion(emotion: Emotion) {
@@ -162,8 +159,26 @@ class JournalViewModel(
         _uiState.update { current ->
             when (refreshed) {
                 null -> current.copy(isSaving = false, saveError = JournalSaveError.NotFoundForDate)
-                else -> refreshed.toUiState(isLoading = false, isSaving = false)
+                else -> {
+                    val base = refreshed.toUiState(isLoading = false, isSaving = false)
+                    base.copy(
+                        emotionOptions = ensureEmotionInOptions(
+                            selectedEmotion = refreshed.emotion,
+                            options = base.emotionOptions,
+                        ),
+                    )
+                }
             }
         }
+    }
+
+    private fun ensureEmotionInOptions(
+        selectedEmotion: Emotion,
+        options: List<Emotion>,
+    ): List<Emotion> {
+        val selectedName = selectedEmotion.name.trim()
+        if (selectedName.isBlank()) return options
+        val alreadyListed = options.any { it.name.equals(selectedName, ignoreCase = true) }
+        return if (alreadyListed) options else options + selectedEmotion.copy(name = selectedName)
     }
 }

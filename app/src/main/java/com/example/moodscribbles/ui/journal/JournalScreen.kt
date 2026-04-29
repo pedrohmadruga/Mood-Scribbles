@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.R
+import com.example.moodscribbles.domain.Emotion
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.JournalEntryRuleViolation
 import com.example.moodscribbles.domain.Mood
@@ -127,6 +128,11 @@ fun JournalScreen(
                         modifier = Modifier.fillMaxWidth(),
                         label = { Text(stringResource(R.string.journal_description_label)) },
                         minLines = 3,
+                    )
+                    EmotionRow(
+                        selectedEmotionName = uiState.emotion.name,
+                        options = uiState.emotionOptions,
+                        onEmotionSelected = { onEvent(JournalUiEvent.EmotionSelected(it)) },
                     )
                     uiState.saveError?.let { error ->
                         JournalSaveErrorBlock(error = error)
@@ -233,6 +239,33 @@ private fun moodLabel(mood: Mood): String = when (mood) {
     Mood.NEUTRAL -> stringResource(R.string.mood_neutral)
     Mood.HAPPY -> stringResource(R.string.mood_happy)
     Mood.VERY_HAPPY -> stringResource(R.string.mood_very_happy)
+}
+
+@Composable
+private fun EmotionRow(
+    selectedEmotionName: String,
+    options: List<Emotion>,
+    onEmotionSelected: (Emotion) -> Unit,
+) {
+    Text(
+        text = stringResource(R.string.journal_emotion_label),
+        style = MaterialTheme.typography.labelLarge,
+    )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        options.forEach { emotion ->
+            val isSelected = emotion.name.equals(selectedEmotionName, ignoreCase = true)
+            FilterChip(
+                selected = isSelected,
+                onClick = { onEmotionSelected(emotion) },
+                label = { Text(text = emotion.name) },
+            )
+        }
+    }
 }
 
 @Composable

@@ -14,7 +14,6 @@ sealed interface JournalUiEvent {
     data class EnergyChanged(val level: Int) : JournalUiEvent
     data class TitleChanged(val value: String) : JournalUiEvent
     data class DescriptionChanged(val value: String) : JournalUiEvent
-    data class EmotionLabelChanged(val label: String) : JournalUiEvent
     data class EmotionSelected(val emotion: Emotion) : JournalUiEvent
     data class TagsChanged(val tags: List<Tag>) : JournalUiEvent
     data object SaveClicked : JournalUiEvent
