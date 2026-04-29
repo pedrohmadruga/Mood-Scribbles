@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.moodscribbles.R
+import com.example.moodscribbles.ui.UnavailableUiScreen
 
 private enum class MainTab(val index: Int) {
     HOME(0),
@@ -59,30 +60,30 @@ fun MainTabsScreen(
     ) { innerPadding ->
         when (selectedTab) {
             MainTab.HOME.index -> {
-                CalendarHomePrototype(
+                UnavailableUiScreen(
+                    sectionName = stringResource(R.string.prototype_tab_home),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenMoodEntry = { navController.navigate(AppRoutes.MOOD_ENTRY) },
-                    onOpenJournalStep = { navController.navigate(AppRoutes.JOURNAL_STEP) },
-                    onOpenFunctionalJournal = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
                 )
             }
             MainTab.INSIGHTS.index -> {
-                InsightsPrototype(
+                UnavailableUiScreen(
+                    sectionName = stringResource(R.string.prototype_tab_insights),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
                 )
             }
             MainTab.SETTINGS.index -> {
-                SettingsTabPrototype(
+                UnavailableUiScreen(
+                    sectionName = stringResource(R.string.prototype_tab_settings),
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenFunctionalJournal = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
-                    onOpenMoodEntry = { navController.navigate(AppRoutes.MOOD_ENTRY) },
-                    onOpenJournalStep = { navController.navigate(AppRoutes.JOURNAL_STEP) },
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
                 )
             }
         }

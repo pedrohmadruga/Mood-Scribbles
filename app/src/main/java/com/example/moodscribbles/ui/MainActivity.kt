@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.journal.JournalScreen
 import com.example.moodscribbles.ui.prototype.AppRoutes
-import com.example.moodscribbles.ui.prototype.JournalStepPrototype
 import com.example.moodscribbles.ui.prototype.MainTabsScreen
-import com.example.moodscribbles.ui.prototype.MoodEntryPrototype
 import com.example.moodscribbles.ui.theme.MoodScribblesTheme
 import org.koin.androidx.compose.KoinAndroidContext
 
@@ -42,15 +42,17 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable(AppRoutes.MOOD_ENTRY) {
-                                MoodEntryPrototype(
-                                    onClose = { navController.popBackStack() },
+                                UnavailableUiScreen(
+                                    sectionName = stringResource(R.string.prototype_nav_mood_entry),
                                     modifier = Modifier.fillMaxSize(),
+                                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
                                 )
                             }
                             composable(AppRoutes.JOURNAL_STEP) {
-                                JournalStepPrototype(
-                                    onBack = { navController.popBackStack() },
+                                UnavailableUiScreen(
+                                    sectionName = stringResource(R.string.prototype_nav_journal_step),
                                     modifier = Modifier.fillMaxSize(),
+                                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
                                 )
                             }
                             composable(AppRoutes.FUNCTIONAL_JOURNAL) {

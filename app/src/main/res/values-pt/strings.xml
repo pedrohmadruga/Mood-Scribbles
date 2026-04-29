@@ -90,4 +90,7 @@
     <string name="prototype_journal_save_entry">Guardar registo</string>
     <string name="prototype_settings_title">Definições</string>
     <string name="prototype_settings_subtitle">Atalhos de protótipo e acesso à tela oficial de registo.</string>
+    <string name="unavailable_ui_title">Unavailable UI</string>
+    <string name="unavailable_ui_message">\"%1$s\" ainda não foi implementado na app real.</string>
+    <string name="unavailable_ui_open_entry">Abrir tela oficial de registo</string>
 </resources>

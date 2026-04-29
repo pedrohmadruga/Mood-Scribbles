@@ -90,4 +90,7 @@
     <string name="prototype_journal_save_entry">Save entry</string>
     <string name="prototype_settings_title">Settings</string>
     <string name="prototype_settings_subtitle">Prototype links plus the official entry screen.</string>
+    <string name="unavailable_ui_title">Unavailable UI</string>
+    <string name="unavailable_ui_message">\"%1$s\" is not implemented yet in the real app.</string>
+    <string name="unavailable_ui_open_entry">Open official entry screen</string>
 </resources>
