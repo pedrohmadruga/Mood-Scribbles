@@ -39,7 +39,7 @@
     <string name="prototype_note_body_stub">Felt peaceful by the river</string>
     <string name="prototype_nav_mood_entry">Open mood entry (prototype)</string>
     <string name="prototype_nav_journal_step">Open journal details (prototype)</string>
-    <string name="prototype_nav_functional_journal">Open functional journal</string>
+    <string name="prototype_nav_functional_journal">Open official entry screen</string>
     <string name="prototype_tab_home">Home</string>
     <string name="prototype_tab_insights">Insights</string>
     <string name="prototype_tab_settings">Settings</string>
@@ -89,5 +89,5 @@
     <string name="prototype_journal_body_placeholder">Write freely. This stays private.</string>
     <string name="prototype_journal_save_entry">Save entry</string>
     <string name="prototype_settings_title">Settings</string>
-    <string name="prototype_settings_subtitle">Jump to other prototype screens.</string>
+    <string name="prototype_settings_subtitle">Prototype links plus the official entry screen.</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,9 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,11 +47,8 @@ fun JournalScreen(
     modifier: Modifier = Modifier,
     viewModel: JournalViewModel = koinViewModel(),
 ) {
-    // collects the UI state from the view model and updates the UI when the state changes
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    // onEvent is a function that takes a JournalUiEvent and calls the onEvent method on the view model
     val onEvent: (JournalUiEvent) -> Unit = viewModel::onEvent
-    // dateFormatter is a formatter for the date (used to format the date in the UI)
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
 
     Scaffold(
@@ -71,15 +69,16 @@ fun JournalScreen(
                 Column(
                     modifier = Modifier
                         .padding(innerPadding)
-                        .fillMaxWidth()
+                        .fillMaxSize()
                         .padding(24.dp),
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     CircularProgressIndicator()
                 }
             }
             else -> {
-                Column( // main column for the journal screen
+                Column(
                     modifier = Modifier
                         .padding(innerPadding)
                         .padding(horizontal = 20.dp)
@@ -87,7 +86,7 @@ fun JournalScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    DateRow( // row for the date, allows the user to navigate to the previous and next day
+                    DateRow(
                         formattedDate = uiState.date.format(dateFormatter),
                         onPreviousDay = {
                             onEvent(JournalUiEvent.DateSelected(uiState.date.minusDays(1)))
@@ -129,13 +128,6 @@ fun JournalScreen(
                         label = { Text(stringResource(R.string.journal_description_label)) },
                         minLines = 3,
                     )
-                    OutlinedTextField(
-                        value = uiState.emotion.name,
-                        onValueChange = { onEvent(JournalUiEvent.EmotionLabelChanged(it)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(R.string.journal_emotion_label)) },
-                        singleLine = true,
-                    )
                     uiState.saveError?.let { error ->
                         JournalSaveErrorBlock(error = error)
                         TextButton(onClick = { onEvent(JournalUiEvent.ClearSaveErrorClicked) }) {
@@ -143,6 +135,7 @@ fun JournalScreen(
                         }
                     }
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -223,9 +216,9 @@ private fun MoodRow(
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Mood.entries.forEach { mood -> // iterates over the moods and creates a FilterChip for each mood
+        Mood.entries.forEach { mood ->
             FilterChip(
-                selected = mood == selected, // if the mood is selected, the FilterChip is selected
+                selected = mood == selected,
                 onClick = { onMoodSelected(mood) },
                 label = { Text(text = moodLabel(mood)) },
             )

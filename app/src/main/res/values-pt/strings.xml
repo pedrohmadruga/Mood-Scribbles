@@ -39,7 +39,7 @@
     <string name="prototype_note_body_stub">Senti-me em paz junto ao rio</string>
     <string name="prototype_nav_mood_entry">Abrir registo de humor (protótipo)</string>
     <string name="prototype_nav_journal_step">Abrir detalhes do diário (protótipo)</string>
-    <string name="prototype_nav_functional_journal">Abrir diário funcional</string>
+    <string name="prototype_nav_functional_journal">Abrir tela oficial de registo</string>
     <string name="prototype_tab_home">Início</string>
     <string name="prototype_tab_insights">Resumo</string>
     <string name="prototype_tab_settings">Definições</string>
@@ -89,5 +89,5 @@
     <string name="prototype_journal_body_placeholder">Escreve com liberdade. Isto fica privado.</string>
     <string name="prototype_journal_save_entry">Guardar registo</string>
     <string name="prototype_settings_title">Definições</string>
-    <string name="prototype_settings_subtitle">Saltar para outros ecrãs de protótipo.</string>
+    <string name="prototype_settings_subtitle">Atalhos de protótipo e acesso à tela oficial de registo.</string>
 </resources>
