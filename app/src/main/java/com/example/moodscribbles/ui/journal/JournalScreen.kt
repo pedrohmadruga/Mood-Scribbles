@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LocalContentColor
@@ -26,6 +27,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,6 +43,9 @@ import com.example.moodscribbles.domain.JournalEntryRuleViolation
 import com.example.moodscribbles.domain.Mood
 import com.example.moodscribbles.domain.Tag
 import org.koin.androidx.compose.koinViewModel
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.math.roundToInt
@@ -46,12 +54,21 @@ import kotlin.math.roundToInt
 @Composable
 fun JournalScreen(
     onNavigateUp: () -> Unit,
+    initialDate: LocalDate? = null,
     modifier: Modifier = Modifier,
     viewModel: JournalViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onEvent: (JournalUiEvent) -> Unit = viewModel::onEvent
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    val today = LocalDate.now()
+
+    LaunchedEffect(initialDate) {
+        val requestedDate = initialDate ?: return@LaunchedEffect
+        if (requestedDate != uiState.date) {
+            onEvent(JournalUiEvent.DateSelected(requestedDate))
+        }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -89,12 +106,20 @@ fun JournalScreen(
                 ) {
                     Spacer(modifier = Modifier.height(4.dp))
                     DateRow(
+                        date = uiState.date,
                         formattedDate = uiState.date.format(dateFormatter),
+                        today = today,
                         onPreviousDay = {
                             onEvent(JournalUiEvent.DateSelected(uiState.date.minusDays(1)))
                         },
                         onNextDay = {
                             onEvent(JournalUiEvent.DateSelected(uiState.date.plusDays(1)))
+                        },
+                        onDatePicked = { pickedDate ->
+                            onEvent(JournalUiEvent.DateSelected(pickedDate))
+                        },
+                        onTodayClick = {
+                            onEvent(JournalUiEvent.DateSelected(today))
                         },
                     )
                     MoodRow(
@@ -193,12 +218,22 @@ fun JournalScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DateRow(
+    date: LocalDate,
     formattedDate: String,
+    today: LocalDate,
     onPreviousDay: () -> Unit,
     onNextDay: () -> Unit,
+    onDatePicked: (LocalDate) -> Unit,
+    onTodayClick: () -> Unit,
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val pickerState = androidx.compose.material3.rememberDatePickerState(
+        initialSelectedDateMillis = date.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+    )
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -207,12 +242,53 @@ private fun DateRow(
         TextButton(onClick = onPreviousDay) {
             Text(text = stringResource(R.string.journal_date_previous))
         }
-        Text(
-            text = formattedDate,
-            style = MaterialTheme.typography.titleMedium,
-        )
+        TextButton(onClick = { showDatePicker = true }) {
+            Text(
+                text = formattedDate,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        }
         TextButton(onClick = onNextDay) {
             Text(text = stringResource(R.string.journal_date_next))
+        }
+    }
+    if (date != today) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            TextButton(onClick = onTodayClick) {
+                Text(text = stringResource(R.string.journal_today))
+            }
+        }
+    }
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pickerState.selectedDateMillis
+                            ?.let { millis ->
+                                val picked = Instant
+                                    .ofEpochMilli(millis)
+                                    .atZone(ZoneOffset.UTC)
+                                    .toLocalDate()
+                                onDatePicked(picked)
+                            }
+                        showDatePicker = false
+                    },
+                ) {
+                    Text(text = stringResource(R.string.journal_date_picker_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text(text = stringResource(R.string.journal_date_picker_cancel))
+                }
+            },
+        ) {
+            androidx.compose.material3.DatePicker(state = pickerState)
         }
     }
 }

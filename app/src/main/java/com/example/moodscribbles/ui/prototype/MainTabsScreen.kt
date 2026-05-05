@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.UnavailableUiScreen
+import java.time.LocalDate
 
 private enum class MainTab(val index: Int) {
     HOME(0),
@@ -65,7 +66,7 @@ fun MainTabsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.functionalJournalRoute()) },
                 )
             }
             MainTab.INSIGHTS.index -> {
@@ -74,7 +75,7 @@ fun MainTabsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.functionalJournalRoute()) },
                 )
             }
             MainTab.SETTINGS.index -> {
@@ -83,7 +84,7 @@ fun MainTabsScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenOfficialEntry = { navController.navigate(AppRoutes.FUNCTIONAL_JOURNAL) },
+                    onOpenOfficialEntry = { navController.navigate(AppRoutes.functionalJournalRoute()) },
                 )
             }
         }
@@ -95,4 +96,9 @@ object AppRoutes {
     const val MOOD_ENTRY = "mood_entry"
     const val JOURNAL_STEP = "journal_step"
     const val FUNCTIONAL_JOURNAL = "functional_journal"
+    const val FUNCTIONAL_JOURNAL_PATTERN = "functional_journal?date={date}"
+
+    fun functionalJournalRoute(date: LocalDate? = null): String {
+        return if (date == null) FUNCTIONAL_JOURNAL else "$FUNCTIONAL_JOURNAL?date=$date"
+    }
 }

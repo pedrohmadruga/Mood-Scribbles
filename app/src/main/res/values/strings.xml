@@ -6,6 +6,10 @@
     <string name="journal_navigate_up">Back</string>
     <string name="journal_date_previous">Previous day</string>
     <string name="journal_date_next">Next day</string>
+    <string name="journal_pick_date">Pick date</string>
+    <string name="journal_today">Today</string>
+    <string name="journal_date_picker_confirm">OK</string>
+    <string name="journal_date_picker_cancel">Cancel</string>
     <string name="journal_mood_label">Mood</string>
     <string name="journal_energy_label">Energy: %1$d</string>
     <string name="journal_title_label">Title</string>
