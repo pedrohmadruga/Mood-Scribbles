@@ -35,4 +35,25 @@ data class DashboardMetrics(
     val moodTrend: List<MoodTrendPoint>,
     val emotionFrequencies: List<EmotionFrequency>,
     val energyBuckets: List<EnergyBucket>,
-)
+) {
+    companion object {
+        // creates an empty dashboard metrics. Needed for initial state and when there is no data.
+        fun empty(
+            periodStart: LocalDate? = null,
+            periodEnd: LocalDate? = null,
+        ): DashboardMetrics = DashboardMetrics(
+            periodStart = periodStart,
+            periodEnd = periodEnd,
+            entryCount = 0,
+            averageMoodScore = null,
+            averageEnergy = null,
+            moodTrend = emptyList(),
+            emotionFrequencies = emptyList(),
+            energyBuckets = listOf(
+                EnergyBucket(EnergyBand.LOW, 0),
+                EnergyBucket(EnergyBand.MID, 0),
+                EnergyBucket(EnergyBand.HIGH, 0),
+            ),
+        )
+    }
+}

@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.UnavailableUiScreen
 import com.example.moodscribbles.ui.calendar.MonthlyCalendarScreen
-import com.example.moodscribbles.ui.history.JournalHistoryScreen
+import com.example.moodscribbles.ui.insights.InsightsTabScreen
 import java.time.LocalDate
 
 private enum class MainTab(val index: Int) {
@@ -77,7 +77,7 @@ fun MainTabsScreen(
                 )
             }
             MainTab.INSIGHTS.index -> {
-                JournalHistoryScreen(
+                InsightsTabScreen(
                     onOpenDayDetail = { date ->
                         navController.navigate(AppRoutes.calendarDayDetailRoute(date))
                     },

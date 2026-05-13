@@ -70,7 +70,10 @@ val appModule = module {
     }
 
     viewModel {
-        JournalHistoryViewModel(journalRepository = get())
+        JournalHistoryViewModel(
+            journalRepository = get(),
+            calculator = get(),
+        )
     }
 
     viewModel { (date: LocalDate) ->

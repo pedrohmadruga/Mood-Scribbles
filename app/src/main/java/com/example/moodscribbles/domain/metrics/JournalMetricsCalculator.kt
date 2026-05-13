@@ -11,16 +11,7 @@ class JournalMetricsCalculator {
         periodEnd: LocalDate? = null,
     ): DashboardMetrics {
         if (entries.isEmpty()) {
-            return DashboardMetrics(
-                periodStart = periodStart,
-                periodEnd = periodEnd,
-                entryCount = 0,
-                averageMoodScore = null,
-                averageEnergy = null,
-                moodTrend = emptyList(),
-                emotionFrequencies = emptyList(),
-                energyBuckets = emptyBuckets(),
-            )
+            return DashboardMetrics.empty(periodStart = periodStart, periodEnd = periodEnd)
         }
 
         val sorted = entries.sortedBy { it.date }
@@ -75,10 +66,4 @@ class JournalMetricsCalculator {
             energyBuckets = energyBuckets,
         )
     }
-
-    private fun emptyBuckets(): List<EnergyBucket> = listOf(
-        EnergyBucket(EnergyBand.LOW, 0),
-        EnergyBucket(EnergyBand.MID, 0),
-        EnergyBucket(EnergyBand.HIGH, 0),
-    )
 }

@@ -3,6 +3,8 @@ package com.example.moodscribbles.ui.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodscribbles.domain.JournalEntry
+import com.example.moodscribbles.domain.metrics.DashboardMetrics
+import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,10 +26,12 @@ data class JournalHistoryUiState(
     val filterMode: HistoryFilterMode = HistoryFilterMode.BY_MONTH,
     val visibleMonth: YearMonth = YearMonth.now(),
     val entries: List<JournalEntry> = emptyList(),
+    val dashboardMetrics: DashboardMetrics = DashboardMetrics.empty(),
 )
 
 class JournalHistoryViewModel(
     private val journalRepository: JournalRepository,
+    private val calculator: JournalMetricsCalculator,
 ) : ViewModel() {
 
     private val filterMode = MutableStateFlow(HistoryFilterMode.BY_MONTH)
@@ -53,6 +57,7 @@ class JournalHistoryViewModel(
                     filterMode = mode,
                     visibleMonth = month,
                     entries = entries.sortedByDescending { it.date },
+                    dashboardMetrics = calculator.compute(entries, start, end),
                 )
             }
         }
