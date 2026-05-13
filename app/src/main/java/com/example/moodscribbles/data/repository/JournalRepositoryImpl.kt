@@ -159,8 +159,12 @@ class JournalRepositoryImpl(
         val emotion = EmotionMapper.toDomain(emotionEntity)
 
         val tagIds = entryTagCrossRefDao.getTagIdsByEntryId(entity.id)
-        val tagsById = tagDao.getByIds(tagIds).associateBy { it.id }
-        val tags = tagIds.mapNotNull { tagsById[it] }.map { TagMapper.toDomain(it) }
+        val tags = if (tagIds.isEmpty()) {
+            emptyList()
+        } else {
+            val tagsById = tagDao.getByIds(tagIds).associateBy { it.id }
+            tagIds.mapNotNull { tagsById[it] }.map { TagMapper.toDomain(it) }
+        }
 
         return JournalEntryMapper.toDomain(
             entity = entity,
