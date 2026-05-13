@@ -3,9 +3,11 @@ package com.example.moodscribbles.core.di
 import androidx.room.Room
 import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
+import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
 import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
+import com.example.moodscribbles.domain.usecase.ObserveDashboardMetricsUseCase
 import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
 import com.example.moodscribbles.ui.calendar.CalendarDayDetailViewModel
 import com.example.moodscribbles.ui.calendar.CalendarViewModel
@@ -46,6 +48,14 @@ val appModule = module {
     factory { CreateJournalEntryUseCase(journalRepository = get()) }
     factory { UpdateJournalEntryUseCase(journalRepository = get()) }
     factory { GetJournalEntryByDateUseCase(journalRepository = get()) }
+
+    factory { JournalMetricsCalculator() }
+    factory {
+        ObserveDashboardMetricsUseCase(
+            journalRepository = get(),
+            calculator = get(),
+        )
+    }
 
     viewModel {
         JournalViewModel(
