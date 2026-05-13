@@ -1,7 +1,11 @@
 package com.example.moodscribbles.core.di
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.example.moodscribbles.data.local.AppDatabase
+import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
+import com.example.moodscribbles.data.preferences.appSettingsDataStore
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
@@ -13,6 +17,7 @@ import com.example.moodscribbles.ui.calendar.CalendarDayDetailViewModel
 import com.example.moodscribbles.ui.calendar.CalendarViewModel
 import com.example.moodscribbles.ui.history.JournalHistoryViewModel
 import com.example.moodscribbles.ui.journal.JournalViewModel
+import com.example.moodscribbles.ui.settings.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -22,6 +27,10 @@ import java.time.LocalDate
  * Root Koin module. Add single/factory/viewModel definitions as features grow.
  */
 val appModule = module {
+    single<DataStore<Preferences>> { androidContext().appSettingsDataStore }
+
+    single { ThemePreferenceRepository(dataStore = get()) }
+
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -74,6 +83,10 @@ val appModule = module {
             journalRepository = get(),
             calculator = get(),
         )
+    }
+
+    viewModel {
+        SettingsViewModel(themePreferenceRepository = get())
     }
 
     viewModel { (date: LocalDate) ->

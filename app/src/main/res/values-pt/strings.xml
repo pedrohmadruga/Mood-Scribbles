@@ -153,4 +153,23 @@
     <string name="unavailable_ui_title">Unavailable UI</string>
     <string name="unavailable_ui_message">\"%1$s\" ainda não foi implementado na app real.</string>
     <string name="unavailable_ui_open_entry">Abrir tela oficial de registo</string>
+    <string name="settings_screen_title">Definições</string>
+    <string name="settings_section_actions">Atalhos</string>
+    <string name="settings_new_journal_entry">Novo registo no diário</string>
+    <string name="settings_new_journal_entry_summary">Abre o ecrã oficial do diário</string>
+    <string name="settings_section_appearance">Aparência</string>
+    <string name="settings_theme_headline">Tema</string>
+    <string name="settings_theme_supporting">Seguir o dispositivo usa o modo claro/escuro do sistema até escolheres um tema fixo.</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_section_privacy">Privacidade e segurança</string>
+    <string name="settings_notifications_title">Notificações</string>
+    <string name="settings_biometric_title">Bloqueio biométrico</string>
+    <string name="settings_feature_coming_soon">Disponível numa atualização futura</string>
+    <string name="settings_about_title">Acerca</string>
+    <string name="settings_about_summary">Nome e versão da app</string>
+    <string name="settings_about_dialog_title">Acerca desta app</string>
+    <string name="settings_about_dialog_body">%1$s\nVersão %2$s</string>
+    <string name="settings_about_ok">OK</string>
 </resources>

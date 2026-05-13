@@ -17,11 +17,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moodscribbles.R
+import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
 import com.example.moodscribbles.ui.calendar.CalendarDayDetailScreen
 import com.example.moodscribbles.ui.journal.JournalScreen
 import com.example.moodscribbles.ui.prototype.AppRoutes
 import com.example.moodscribbles.ui.prototype.MainTabsScreen
-import com.example.moodscribbles.ui.theme.MoodScribblesTheme
+import com.example.moodscribbles.ui.theme.MoodScribblesAppTheme
+import org.koin.android.ext.android.getKoin
 import org.koin.androidx.compose.KoinAndroidContext
 import java.time.LocalDate
 
@@ -29,9 +31,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val themePreferenceRepository = getKoin().get<ThemePreferenceRepository>()
         setContent {
             KoinAndroidContext {
-                MoodScribblesTheme {
+                MoodScribblesAppTheme(themePreferenceRepository = themePreferenceRepository) {
                     val navController = rememberNavController()
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         NavHost(
