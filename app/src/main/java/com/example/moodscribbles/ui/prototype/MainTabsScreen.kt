@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.UnavailableUiScreen
+import com.example.moodscribbles.ui.calendar.MonthlyCalendarScreen
 import java.time.LocalDate
 
 private enum class MainTab(val index: Int) {
@@ -61,12 +62,13 @@ fun MainTabsScreen(
     ) { innerPadding ->
         when (selectedTab) {
             MainTab.HOME.index -> {
-                UnavailableUiScreen(
-                    sectionName = stringResource(R.string.prototype_tab_home),
+                MonthlyCalendarScreen(
+                    onOpenJournalForDate = { date ->
+                        navController.navigate(AppRoutes.functionalJournalRoute(date))
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    onOpenOfficialEntry = { navController.navigate(AppRoutes.functionalJournalRoute()) },
                 )
             }
             MainTab.INSIGHTS.index -> {
