@@ -45,11 +45,13 @@
     <string name="mood_happy">Happy</string>
     <string name="mood_very_happy">Very happy</string>
     <string name="calendar_screen_title">Calendar</string>
-    <string name="calendar_demo_banner">Preview: mood emoji cycles by day. Your saved moods will appear here in a later update.</string>
+    <string name="calendar_data_banner">Day colors and moods come from your saved journal entries.</string>
+    <string name="calendar_empty_day_symbol">\u00B7</string>
     <string name="calendar_prev_month_cd">Previous month</string>
     <string name="calendar_next_month_cd">Next month</string>
     <string name="calendar_fab_today_content_description">Today: add or open entry</string>
-    <string name="calendar_sheet_preview_line">Preview (not your data yet): %1$s</string>
+    <string name="calendar_sheet_saved_mood_line">Saved mood: %1$s</string>
+    <string name="calendar_sheet_no_entry">No saved entry for this day yet.</string>
     <string name="calendar_open_journal_for_day">Open entry for this day</string>
     <string name="prototype_app_title">MoodScribbles</string>
     <string name="prototype_calendar_month">April 2026</string>

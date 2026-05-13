@@ -20,16 +20,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,9 +44,12 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.R
+import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.Mood
 import com.example.moodscribbles.ui.prototype.PrototypeColors
+import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -57,11 +61,6 @@ import java.time.temporal.WeekFields
 import java.util.Locale
 
 private const val GRID_CELLS = 42
-
-private fun demoMoodForDay(dayOfMonth: Int): Mood {
-    val index = (dayOfMonth - 1).coerceAtLeast(0) % Mood.entries.size
-    return Mood.entries[index]
-}
 
 private fun calendarGridCells(yearMonth: YearMonth): List<LocalDate?> {
     val weekFields = WeekFields.of(Locale.getDefault())
@@ -79,10 +78,18 @@ private fun calendarGridCells(yearMonth: YearMonth): List<LocalDate?> {
 fun MonthlyCalendarScreen(
     onOpenJournalForDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: CalendarViewModel = koinViewModel(),
 ) {
-    var visibleMonth by remember { mutableStateOf(YearMonth.now()) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var showDaySheet by remember { mutableStateOf(false) }
+
+    val visibleMonth = uiState.visibleMonth
+
+    LaunchedEffect(visibleMonth) {
+        showDaySheet = false
+        selectedDate = null
+    }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val fabLabel = stringResource(R.string.calendar_fab_today_content_description)
@@ -154,7 +161,7 @@ fun MonthlyCalendarScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = stringResource(R.string.calendar_demo_banner),
+                text = stringResource(R.string.calendar_data_banner),
                 style = MaterialTheme.typography.bodySmall,
                 color = PrototypeColors.onSurfaceMuted,
             )
@@ -165,7 +172,7 @@ fun MonthlyCalendarScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(
-                    onClick = { visibleMonth = visibleMonth.minusMonths(1) },
+                    onClick = { viewModel.onPreviousMonth() },
                     modifier = Modifier.semantics { contentDescription = prevMonthCd },
                 ) {
                     Text("<", color = PrototypeColors.accent)
@@ -179,7 +186,7 @@ fun MonthlyCalendarScreen(
                     color = PrototypeColors.onBackground,
                 )
                 TextButton(
-                    onClick = { visibleMonth = visibleMonth.plusMonths(1) },
+                    onClick = { viewModel.onNextMonth() },
                     modifier = Modifier.semantics { contentDescription = nextMonthCd },
                 ) {
                     Text(">", color = PrototypeColors.accent)
@@ -221,26 +228,37 @@ fun MonthlyCalendarScreen(
                                 .clip(RoundedCornerShape(12.dp)),
                         )
                     } else {
-                        val demoMood = demoMoodForDay(cellDate.dayOfMonth)
+                        val entry = uiState.entriesByDate[cellDate]
                         val isToday = cellDate == today
                         val isSelected = showDaySheet && cellDate == selectedDate
-                        val cellBackground = lerp(
-                            PrototypeColors.surfaceCard,
-                            demoMood.calendarTint(),
-                            0.58f,
-                        )
+                        val cellBackground = if (entry != null) {
+                            lerp(
+                                PrototypeColors.surfaceCard,
+                                entry.mood.calendarTint(),
+                                0.58f,
+                            )
+                        } else {
+                            PrototypeColors.surfaceCard
+                        }
+                        val borderModifier = when {
+                            isSelected -> Modifier.border(
+                                2.dp,
+                                PrototypeColors.selectedBorder,
+                                RoundedCornerShape(12.dp),
+                            )
+                            entry != null -> Modifier.border(
+                                1.5.dp,
+                                PrototypeColors.accent,
+                                RoundedCornerShape(12.dp),
+                            )
+                            else -> Modifier
+                        }
                         Box(
                             modifier = Modifier
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(cellBackground)
-                                .then(
-                                    if (isSelected) {
-                                        Modifier.border(2.dp, PrototypeColors.selectedBorder, RoundedCornerShape(12.dp))
-                                    } else {
-                                        Modifier
-                                    },
-                                )
+                                .then(borderModifier)
                                 .clickable { openSheetForDate(cellDate) },
                             contentAlignment = Alignment.Center,
                         ) {
@@ -252,7 +270,11 @@ fun MonthlyCalendarScreen(
                                     modifier = Modifier.align(Alignment.CenterHorizontally),
                                 )
                                 Text(
-                                    text = demoMood.calendarEmoji(),
+                                    text = if (entry != null) {
+                                        entry.mood.calendarEmoji()
+                                    } else {
+                                        stringResource(R.string.calendar_empty_day_symbol)
+                                    },
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
@@ -265,7 +287,7 @@ fun MonthlyCalendarScreen(
 
     if (showDaySheet && selectedDate != null) {
         val date = selectedDate!!
-        val demoMood = demoMoodForDay(date.dayOfMonth)
+        val entryForDay = uiState.entriesByDate[date]
         ModalBottomSheet(
             onDismissRequest = { dismissSheet() },
             sheetState = sheetState,
@@ -274,8 +296,7 @@ fun MonthlyCalendarScreen(
         ) {
             CalendarDaySheetContent(
                 formattedDate = date.format(fullDateFormatter),
-                demoMood = demoMood,
-                demoMoodLabel = moodDisplayLabel(demoMood),
+                entry = entryForDay,
                 onOpenJournal = {
                     dismissSheet()
                     onOpenJournalForDate(date)
@@ -300,8 +321,7 @@ private fun moodDisplayLabel(mood: Mood): String = when (mood) {
 @Composable
 private fun CalendarDaySheetContent(
     formattedDate: String,
-    demoMood: Mood,
-    demoMoodLabel: String,
+    entry: JournalEntry?,
     onOpenJournal: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -314,22 +334,34 @@ private fun CalendarDaySheetContent(
             style = MaterialTheme.typography.titleLarge,
             color = PrototypeColors.onBackground,
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = demoMood.calendarTint().copy(alpha = 0.35f),
+        if (entry != null) {
+            val mood = entry.mood
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = mood.calendarTint().copy(alpha = 0.35f),
+                ) {
+                    Text(
+                        text = mood.calendarEmoji(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    )
+                }
                 Text(
-                    text = demoMood.calendarEmoji(),
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    text = stringResource(
+                        R.string.calendar_sheet_saved_mood_line,
+                        moodDisplayLabel(mood),
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = PrototypeColors.onSurfaceMuted,
                 )
             }
+        } else {
             Text(
-                text = stringResource(R.string.calendar_sheet_preview_line, demoMoodLabel),
+                text = stringResource(R.string.calendar_sheet_no_entry),
                 style = MaterialTheme.typography.bodyMedium,
                 color = PrototypeColors.onSurfaceMuted,
             )

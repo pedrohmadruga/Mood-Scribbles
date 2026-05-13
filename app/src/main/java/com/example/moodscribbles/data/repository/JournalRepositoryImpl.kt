@@ -17,6 +17,9 @@ import com.example.moodscribbles.domain.Emotion
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.Tag
 import com.example.moodscribbles.domain.repository.JournalRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import java.time.Instant
 import java.time.LocalDate
 
@@ -45,6 +48,22 @@ class JournalRepositoryImpl(
             endDateInclusive = endDateInclusive.toString(),
         ).map { toDomain(it) }
     }
+
+    override fun observeEntriesByDateRange(
+        startDateInclusive: LocalDate,
+        endDateInclusive: LocalDate,
+    ): Flow<List<JournalEntry>> =
+        journalDao.observeEntriesByDateRange(
+            startDateInclusive = startDateInclusive.toString(),
+            endDateInclusive = endDateInclusive.toString(),
+        ).flatMapLatest { entities ->
+            flow {
+                val mapped = appDatabase.withTransaction {
+                    entities.map { toDomain(it) }
+                }
+                emit(mapped)
+            }
+        }
 
     override suspend fun insertEntry(entry: JournalEntry): Long = appDatabase.withTransaction {
         val emotionId = resolveEmotionId(entry.emotion)
