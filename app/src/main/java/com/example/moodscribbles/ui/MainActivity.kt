@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -15,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moodscribbles.R
+import com.example.moodscribbles.ui.calendar.CalendarDayDetailScreen
 import com.example.moodscribbles.ui.journal.JournalScreen
 import com.example.moodscribbles.ui.prototype.AppRoutes
 import com.example.moodscribbles.ui.prototype.MainTabsScreen
@@ -43,6 +46,33 @@ class MainActivity : ComponentActivity() {
                                     navController = navController,
                                     modifier = Modifier.fillMaxSize(),
                                 )
+                            }
+                            composable(
+                                route = AppRoutes.CALENDAR_DAY_DETAIL_PATTERN,
+                                arguments = listOf(
+                                    navArgument("date") { type = NavType.StringType },
+                                ),
+                            ) { backStackEntry ->
+                                val parsed = backStackEntry.arguments
+                                    ?.getString("date")
+                                    ?.let { raw -> runCatching { LocalDate.parse(raw) }.getOrNull() }
+                                if (parsed == null) {
+                                    LaunchedEffect(Unit) {
+                                        navController.popBackStack()
+                                    }
+                                    Box(modifier = Modifier.fillMaxSize())
+                                } else {
+                                    CalendarDayDetailScreen(
+                                        date = parsed,
+                                        onNavigateUp = { navController.popBackStack() },
+                                        onOpenJournalForDate = { date ->
+                                            navController.navigate(
+                                                AppRoutes.functionalJournalRoute(date),
+                                            )
+                                        },
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
+                                }
                             }
                             composable(AppRoutes.MOOD_ENTRY) {
                                 UnavailableUiScreen(

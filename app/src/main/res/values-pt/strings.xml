@@ -53,6 +53,13 @@
     <string name="calendar_sheet_saved_mood_line">Humor guardado: %1$s</string>
     <string name="calendar_sheet_no_entry">Ainda não há registo guardado para este dia.</string>
     <string name="calendar_open_journal_for_day">Abrir registo deste dia</string>
+    <string name="calendar_edit_entry_for_day">Editar registro desse dia</string>
+    <string name="calendar_day_detail_journal_heading">Registo no diário</string>
+    <string name="calendar_day_detail_no_notes">Sem título nem notas</string>
+    <string name="calendar_day_detail_title">Detalhe do dia</string>
+    <string name="calendar_navigate_up_cd">Voltar</string>
+    <string name="calendar_day_detail_not_set">Não definido</string>
+    <string name="calendar_day_detail_no_tags">Sem tags</string>
     <string name="prototype_app_title">MoodScribbles</string>
     <string name="prototype_calendar_month">Abril de 2026</string>
     <string name="prototype_view_month">Mês</string>

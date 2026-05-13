@@ -7,11 +7,13 @@ import com.example.moodscribbles.domain.repository.JournalRepository
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
 import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
 import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
+import com.example.moodscribbles.ui.calendar.CalendarDayDetailViewModel
 import com.example.moodscribbles.ui.calendar.CalendarViewModel
 import com.example.moodscribbles.ui.journal.JournalViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import java.time.LocalDate
 
 /**
  * Root Koin module. Add single/factory/viewModel definitions as features grow.
@@ -54,5 +56,9 @@ val appModule = module {
 
     viewModel {
         CalendarViewModel(journalRepository = get())
+    }
+
+    viewModel { (date: LocalDate) ->
+        CalendarDayDetailViewModel(journalRepository = get(), date = date)
     }
 }

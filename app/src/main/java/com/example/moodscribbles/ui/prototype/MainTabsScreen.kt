@@ -64,6 +64,9 @@ fun MainTabsScreen(
         when (selectedTab) {
             MainTab.HOME.index -> {
                 MonthlyCalendarScreen(
+                    onOpenDayDetail = { date ->
+                        navController.navigate(AppRoutes.calendarDayDetailRoute(date))
+                    },
                     onOpenJournalForDate = { date ->
                         navController.navigate(AppRoutes.functionalJournalRoute(date))
                     },
@@ -104,4 +107,9 @@ object AppRoutes {
     fun functionalJournalRoute(date: LocalDate? = null): String {
         return if (date == null) FUNCTIONAL_JOURNAL else "$FUNCTIONAL_JOURNAL?date=$date"
     }
+
+    const val CALENDAR_DAY_DETAIL = "calendar_day_detail"
+    const val CALENDAR_DAY_DETAIL_PATTERN = "$CALENDAR_DAY_DETAIL/{date}"
+
+    fun calendarDayDetailRoute(date: LocalDate): String = "$CALENDAR_DAY_DETAIL/${date}"
 }

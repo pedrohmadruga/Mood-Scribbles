@@ -53,6 +53,13 @@
     <string name="calendar_sheet_saved_mood_line">Saved mood: %1$s</string>
     <string name="calendar_sheet_no_entry">No saved entry for this day yet.</string>
     <string name="calendar_open_journal_for_day">Open entry for this day</string>
+    <string name="calendar_edit_entry_for_day">Edit the entry for this day</string>
+    <string name="calendar_day_detail_journal_heading">Diary entry</string>
+    <string name="calendar_day_detail_no_notes">No title or notes</string>
+    <string name="calendar_day_detail_title">Day detail</string>
+    <string name="calendar_navigate_up_cd">Navigate up</string>
+    <string name="calendar_day_detail_not_set">Not set</string>
+    <string name="calendar_day_detail_no_tags">No tags</string>
     <string name="prototype_app_title">MoodScribbles</string>
     <string name="prototype_calendar_month">April 2026</string>
     <string name="prototype_view_month">Month</string>
