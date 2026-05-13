@@ -2,6 +2,7 @@ package com.example.moodscribbles.ui.prototype
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -38,7 +39,7 @@ fun MainTabsScreen(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            NavigationBar(containerColor = PrototypeColors.surface) {
+            NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainer) {
                 NavigationBarItem(
                     selected = selectedTab == MainTab.HOME.index,
                     onClick = { selectedTab = MainTab.HOME.index },

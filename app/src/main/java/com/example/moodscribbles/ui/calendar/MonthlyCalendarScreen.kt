@@ -48,7 +48,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.R
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.Mood
-import com.example.moodscribbles.ui.prototype.PrototypeColors
 import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -110,6 +109,7 @@ fun MonthlyCalendarScreen(
     }
     val gridCells = remember(visibleMonth) { calendarGridCells(visibleMonth) }
     val today = LocalDate.now()
+    val colorScheme = MaterialTheme.colorScheme
 
     fun openSheetForDate(date: LocalDate) {
         selectedDate = date
@@ -131,14 +131,14 @@ fun MonthlyCalendarScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = PrototypeColors.background,
-        contentColor = PrototypeColors.onBackground,
+        containerColor = colorScheme.background,
+        contentColor = colorScheme.onBackground,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onFabClick() },
                 modifier = Modifier.semantics { contentDescription = fabLabel },
-                containerColor = PrototypeColors.accent,
-                contentColor = PrototypeColors.background,
+                containerColor = colorScheme.primary,
+                contentColor = colorScheme.onPrimary,
             ) {
                 Text(
                     text = "+",
@@ -157,13 +157,13 @@ fun MonthlyCalendarScreen(
             Text(
                 text = stringResource(R.string.calendar_screen_title),
                 style = MaterialTheme.typography.headlineSmall,
-                color = PrototypeColors.onBackground,
+                color = colorScheme.onBackground,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.calendar_data_banner),
                 style = MaterialTheme.typography.bodySmall,
-                color = PrototypeColors.onSurfaceMuted,
+                color = colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
@@ -175,7 +175,7 @@ fun MonthlyCalendarScreen(
                     onClick = { viewModel.onPreviousMonth() },
                     modifier = Modifier.semantics { contentDescription = prevMonthCd },
                 ) {
-                    Text("<", color = PrototypeColors.accent)
+                    Text("<", color = colorScheme.primary)
                 }
                 Text(
                     text = visibleMonth.format(monthTitleFormatter)
@@ -183,13 +183,13 @@ fun MonthlyCalendarScreen(
                             if (ch.isLowerCase()) ch.titlecase(Locale.getDefault()) else ch.toString()
                         },
                     style = MaterialTheme.typography.titleMedium,
-                    color = PrototypeColors.onBackground,
+                    color = colorScheme.onBackground,
                 )
                 TextButton(
                     onClick = { viewModel.onNextMonth() },
                     modifier = Modifier.semantics { contentDescription = nextMonthCd },
                 ) {
-                    Text(">", color = PrototypeColors.accent)
+                    Text(">", color = colorScheme.primary)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -201,7 +201,7 @@ fun MonthlyCalendarScreen(
                     Text(
                         text = label,
                         style = MaterialTheme.typography.labelSmall,
-                        color = PrototypeColors.onSurfaceMuted,
+                        color = colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f),
                         textAlign = TextAlign.Center,
                     )
@@ -233,22 +233,22 @@ fun MonthlyCalendarScreen(
                         val isSelected = showDaySheet && cellDate == selectedDate
                         val cellBackground = if (entry != null) {
                             lerp(
-                                PrototypeColors.surfaceCard,
+                                colorScheme.surfaceVariant,
                                 entry.mood.calendarTint(),
                                 0.58f,
                             )
                         } else {
-                            PrototypeColors.surfaceCard
+                            colorScheme.surfaceVariant
                         }
                         val borderModifier = when {
                             isSelected -> Modifier.border(
                                 2.dp,
-                                PrototypeColors.selectedBorder,
+                                colorScheme.primary,
                                 RoundedCornerShape(12.dp),
                             )
                             entry != null -> Modifier.border(
                                 1.5.dp,
-                                PrototypeColors.accent,
+                                colorScheme.outline,
                                 RoundedCornerShape(12.dp),
                             )
                             else -> Modifier
@@ -266,7 +266,7 @@ fun MonthlyCalendarScreen(
                                 Text(
                                     text = cellDate.dayOfMonth.toString(),
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = if (isToday) PrototypeColors.accent else PrototypeColors.onBackground,
+                                    color = if (isToday) colorScheme.primary else colorScheme.onSurface,
                                     modifier = Modifier.align(Alignment.CenterHorizontally),
                                 )
                                 Text(
@@ -276,6 +276,7 @@ fun MonthlyCalendarScreen(
                                         stringResource(R.string.calendar_empty_day_symbol)
                                     },
                                     style = MaterialTheme.typography.bodySmall,
+                                    color = colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -291,8 +292,8 @@ fun MonthlyCalendarScreen(
         ModalBottomSheet(
             onDismissRequest = { dismissSheet() },
             sheetState = sheetState,
-            containerColor = PrototypeColors.surface,
-            contentColor = PrototypeColors.onBackground,
+            containerColor = colorScheme.surfaceContainerHigh,
+            contentColor = colorScheme.onSurface,
         ) {
             CalendarDaySheetContent(
                 formattedDate = date.format(fullDateFormatter),
@@ -325,6 +326,7 @@ private fun CalendarDaySheetContent(
     onOpenJournal: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -332,7 +334,7 @@ private fun CalendarDaySheetContent(
         Text(
             text = formattedDate,
             style = MaterialTheme.typography.titleLarge,
-            color = PrototypeColors.onBackground,
+            color = colorScheme.onSurface,
         )
         if (entry != null) {
             val mood = entry.mood
@@ -347,6 +349,7 @@ private fun CalendarDaySheetContent(
                     Text(
                         text = mood.calendarEmoji(),
                         style = MaterialTheme.typography.headlineSmall,
+                        color = colorScheme.onSurface,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     )
                 }
@@ -356,14 +359,14 @@ private fun CalendarDaySheetContent(
                         moodDisplayLabel(mood),
                     ),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PrototypeColors.onSurfaceMuted,
+                    color = colorScheme.onSurfaceVariant,
                 )
             }
         } else {
             Text(
                 text = stringResource(R.string.calendar_sheet_no_entry),
                 style = MaterialTheme.typography.bodyMedium,
-                color = PrototypeColors.onSurfaceMuted,
+                color = colorScheme.onSurfaceVariant,
             )
         }
         Button(onClick = onOpenJournal) {
