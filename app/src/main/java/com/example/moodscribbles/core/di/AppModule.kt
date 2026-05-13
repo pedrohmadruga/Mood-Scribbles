@@ -9,6 +9,7 @@ import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
 import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
 import com.example.moodscribbles.ui.calendar.CalendarDayDetailViewModel
 import com.example.moodscribbles.ui.calendar.CalendarViewModel
+import com.example.moodscribbles.ui.history.JournalHistoryViewModel
 import com.example.moodscribbles.ui.journal.JournalViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -56,6 +57,10 @@ val appModule = module {
 
     viewModel {
         CalendarViewModel(journalRepository = get())
+    }
+
+    viewModel {
+        JournalHistoryViewModel(journalRepository = get())
     }
 
     viewModel { (date: LocalDate) ->
