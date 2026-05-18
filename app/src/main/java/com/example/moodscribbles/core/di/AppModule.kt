@@ -7,6 +7,7 @@ import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
 import com.example.moodscribbles.data.preferences.BiometricPreferenceRepository
 import com.example.moodscribbles.data.preferences.appSettingsDataStore
+import com.example.moodscribbles.data.security.BiometricAuthManager
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
@@ -34,6 +35,8 @@ val appModule = module {
 
     single { BiometricPreferenceRepository(dataStore = get()) }
 
+    single { BiometricAuthManager(context = androidContext()) }
+    
     single {
         Room.databaseBuilder(
             androidContext(),

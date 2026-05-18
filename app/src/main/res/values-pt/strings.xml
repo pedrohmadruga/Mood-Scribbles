@@ -172,4 +172,7 @@
     <string name="settings_about_dialog_title">Acerca desta app</string>
     <string name="settings_about_dialog_body">%1$s\nVersão %2$s</string>
     <string name="settings_about_ok">OK</string>
+    <string name="biometric_prompt_title">Desbloquear Mood Scribbles</string>
+    <string name="biometric_prompt_subtitle">Utilize biometria ou o PIN, padrão ou senha do dispositivo</string>
+    <string name="biometric_error_not_available">Configure biometria ou bloqueio de tela nas configurações do telefone.</string>
 </resources>
