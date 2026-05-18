@@ -166,6 +166,9 @@
     <string name="settings_section_privacy">Privacy and security</string>
     <string name="settings_notifications_title">Notifications</string>
     <string name="settings_biometric_title">Biometric lock</string>
+    <string name="settings_biometric_summary_off">Require unlock when opening the app</string>
+    <string name="settings_biometric_summary_on">App lock is enabled</string>
+    <string name="settings_biometric_unavailable">Set up biometrics or a screen lock on your device first</string>
     <string name="settings_feature_coming_soon">Coming in a future update</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_summary">App name and version</string>

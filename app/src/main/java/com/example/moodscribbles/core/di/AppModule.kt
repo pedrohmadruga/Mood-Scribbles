@@ -36,7 +36,7 @@ val appModule = module {
     single { BiometricPreferenceRepository(dataStore = get()) }
 
     single { BiometricAuthManager(context = androidContext()) }
-    
+
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -92,7 +92,11 @@ val appModule = module {
     }
 
     viewModel {
-        SettingsViewModel(themePreferenceRepository = get())
+        SettingsViewModel(
+            themePreferenceRepository = get(),
+            biometricPreferenceRepository = get(),
+            biometricAuthManager = get(),
+        )
     }
 
     viewModel { (date: LocalDate) ->

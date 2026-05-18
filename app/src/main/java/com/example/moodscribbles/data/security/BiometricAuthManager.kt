@@ -8,6 +8,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import java.util.concurrent.Executor
+import com.example.moodscribbles.R
 
 class BiometricAuthManager(
     private val context: Context,
@@ -51,7 +52,7 @@ class BiometricAuthManager(
         onCancel: () -> Unit,
     ) {
         if (getAvailability() != BiometricAvailability.AVAILABLE) {
-            onError(context.getString(/* R.string.biometric_error_not_available */))
+            onError(context.getString(R.string.biometric_error_not_available))
             return
         }
 

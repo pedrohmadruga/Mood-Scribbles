@@ -166,6 +166,9 @@
     <string name="settings_section_privacy">Privacidade e segurança</string>
     <string name="settings_notifications_title">Notificações</string>
     <string name="settings_biometric_title">Bloqueio biométrico</string>
+    <string name="settings_biometric_summary_off">Exigir desbloqueio ao abrir o app</string>
+    <string name="settings_biometric_summary_on">Bloqueio do app ativado</string>
+    <string name="settings_biometric_unavailable">Configure biometria ou bloqueio de tela no telefone</string>
     <string name="settings_feature_coming_soon">Disponível numa atualização futura</string>
     <string name="settings_about_title">Acerca</string>
     <string name="settings_about_summary">Nome e versão da app</string>
