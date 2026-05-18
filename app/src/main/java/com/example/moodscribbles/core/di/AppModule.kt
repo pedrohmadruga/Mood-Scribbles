@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
+import com.example.moodscribbles.data.preferences.BiometricPreferenceRepository
 import com.example.moodscribbles.data.preferences.appSettingsDataStore
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
@@ -30,6 +31,8 @@ val appModule = module {
     single<DataStore<Preferences>> { androidContext().appSettingsDataStore }
 
     single { ThemePreferenceRepository(dataStore = get()) }
+
+    single { BiometricPreferenceRepository(dataStore = get()) }
 
     single {
         Room.databaseBuilder(
