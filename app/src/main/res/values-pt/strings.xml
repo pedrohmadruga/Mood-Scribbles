@@ -178,4 +178,7 @@
     <string name="biometric_prompt_title">Desbloquear Mood Scribbles</string>
     <string name="biometric_prompt_subtitle">Utilize biometria ou o PIN, padrão ou senha do dispositivo</string>
     <string name="biometric_error_not_available">Configure biometria ou bloqueio de tela nas configurações do telefone.</string>
+    <string name="app_lock_title">App bloqueado</string>
+    <string name="app_lock_message">Desbloqueie para continuar</string>
+    <string name="app_lock_unlock_button">Desbloquear</string>
 </resources>

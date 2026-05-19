@@ -20,6 +20,7 @@ import com.example.moodscribbles.ui.calendar.CalendarViewModel
 import com.example.moodscribbles.ui.history.JournalHistoryViewModel
 import com.example.moodscribbles.ui.journal.JournalViewModel
 import com.example.moodscribbles.ui.settings.SettingsViewModel
+import com.example.moodscribbles.ui.security.AppLockViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -101,5 +102,12 @@ val appModule = module {
 
     viewModel { (date: LocalDate) ->
         CalendarDayDetailViewModel(journalRepository = get(), date = date)
+    }
+
+    viewModel {
+        AppLockViewModel(
+            biometricPreferenceRepository = get(),
+            biometricAuthManager = get(),
+        )
     }
 }

@@ -24,6 +24,7 @@ import com.example.moodscribbles.ui.journal.JournalScreen
 import com.example.moodscribbles.ui.prototype.AppRoutes
 import com.example.moodscribbles.ui.prototype.MainTabsScreen
 import com.example.moodscribbles.ui.theme.MoodScribblesAppTheme
+import com.example.moodscribbles.ui.security.AppLockGate
 import org.koin.android.ext.android.getKoin
 import org.koin.androidx.compose.KoinAndroidContext
 import java.time.LocalDate
@@ -43,86 +44,89 @@ class MainActivity : FragmentActivity() {
             setContent {
                 KoinAndroidContext {
                     MoodScribblesAppTheme(themePreferenceRepository = themePreferenceRepository) {
-                        val navController = rememberNavController()
-                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                            NavHost(
-                                navController = navController,
-                                startDestination = AppRoutes.MAIN_TABS,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(innerPadding),
-                            ) {
-                                composable(AppRoutes.MAIN_TABS) {
-                                    MainTabsScreen(
-                                        navController = navController,
-                                        modifier = Modifier.fillMaxSize(),
-                                    )
-                                }
-                                composable(
-                                    route = AppRoutes.CALENDAR_DAY_DETAIL_PATTERN,
-                                    arguments = listOf(
-                                        navArgument("date") { type = NavType.StringType },
-                                    ),
-                                ) { backStackEntry ->
-                                    val parsed = backStackEntry.arguments
-                                        ?.getString("date")
-                                        ?.let { raw -> runCatching { LocalDate.parse(raw) }.getOrNull() }
-                                    if (parsed == null) {
-                                        LaunchedEffect(Unit) {
-                                            navController.popBackStack()
+                        AppLockGate(activity = this@MainActivity) {
+                            val navController = rememberNavController()
+                            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                                NavHost(
+                                    navController = navController,
+                                    startDestination = AppRoutes.MAIN_TABS,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(innerPadding),
+                                ) {
+                                    composable(AppRoutes.MAIN_TABS) {
+                                        MainTabsScreen(
+                                            navController = navController,
+                                            modifier = Modifier.fillMaxSize(),
+                                        )
+                                    }
+                                    composable(
+                                        route = AppRoutes.CALENDAR_DAY_DETAIL_PATTERN,
+                                        arguments = listOf(
+                                            navArgument("date") { type = NavType.StringType },
+                                        ),
+                                    ) { backStackEntry ->
+                                        val parsed = backStackEntry.arguments
+                                            ?.getString("date")
+                                            ?.let { raw -> runCatching { LocalDate.parse(raw) }.getOrNull() }
+                                        if (parsed == null) {
+                                            LaunchedEffect(Unit) {
+                                                navController.popBackStack()
+                                            }
+                                            Box(modifier = Modifier.fillMaxSize())
+                                        } else {
+                                            CalendarDayDetailScreen(
+                                                date = parsed,
+                                                onNavigateUp = { navController.popBackStack() },
+                                                onOpenJournalForDate = { date ->
+                                                    navController.navigate(
+                                                        AppRoutes.functionalJournalRoute(date),
+                                                    )
+                                                },
+                                                modifier = Modifier.fillMaxSize(),
+                                            )
                                         }
-                                        Box(modifier = Modifier.fillMaxSize())
-                                    } else {
-                                        CalendarDayDetailScreen(
-                                            date = parsed,
-                                            onNavigateUp = { navController.popBackStack() },
-                                            onOpenJournalForDate = { date ->
-                                                navController.navigate(
-                                                    AppRoutes.functionalJournalRoute(date),
-                                                )
+                                    }
+                                    composable(AppRoutes.MOOD_ENTRY) {
+                                        UnavailableUiScreen(
+                                            sectionName = stringResource(R.string.prototype_nav_mood_entry),
+                                            modifier = Modifier.fillMaxSize(),
+                                            onOpenOfficialEntry = {
+                                                navController.navigate(AppRoutes.functionalJournalRoute())
                                             },
+                                        )
+                                    }
+                                    composable(AppRoutes.JOURNAL_STEP) {
+                                        UnavailableUiScreen(
+                                            sectionName = stringResource(R.string.prototype_nav_journal_step),
+                                            modifier = Modifier.fillMaxSize(),
+                                            onOpenOfficialEntry = {
+                                                navController.navigate(AppRoutes.functionalJournalRoute())
+                                            },
+                                        )
+                                    }
+                                    composable(
+                                        route = AppRoutes.FUNCTIONAL_JOURNAL_PATTERN,
+                                        arguments = listOf(
+                                            navArgument("date") {
+                                                type = NavType.StringType
+                                                nullable = true
+                                                defaultValue = null
+                                            },
+                                        ),
+                                    ) { backStackEntry ->
+                                        val initialDate = backStackEntry.arguments
+                                            ?.getString("date")
+                                            ?.let { raw -> runCatching { LocalDate.parse(raw) }.getOrNull() }
+                                        JournalScreen(
+                                            onNavigateUp = { navController.popBackStack() },
+                                            initialDate = initialDate,
                                             modifier = Modifier.fillMaxSize(),
                                         )
                                     }
                                 }
-                                composable(AppRoutes.MOOD_ENTRY) {
-                                    UnavailableUiScreen(
-                                        sectionName = stringResource(R.string.prototype_nav_mood_entry),
-                                        modifier = Modifier.fillMaxSize(),
-                                        onOpenOfficialEntry = {
-                                            navController.navigate(AppRoutes.functionalJournalRoute())
-                                        },
-                                    )
-                                }
-                                composable(AppRoutes.JOURNAL_STEP) {
-                                    UnavailableUiScreen(
-                                        sectionName = stringResource(R.string.prototype_nav_journal_step),
-                                        modifier = Modifier.fillMaxSize(),
-                                        onOpenOfficialEntry = {
-                                            navController.navigate(AppRoutes.functionalJournalRoute())
-                                        },
-                                    )
-                                }
-                                composable(
-                                    route = AppRoutes.FUNCTIONAL_JOURNAL_PATTERN,
-                                    arguments = listOf(
-                                        navArgument("date") {
-                                            type = NavType.StringType
-                                            nullable = true
-                                            defaultValue = null
-                                        },
-                                    ),
-                                ) { backStackEntry ->
-                                    val initialDate = backStackEntry.arguments
-                                        ?.getString("date")
-                                        ?.let { raw -> runCatching { LocalDate.parse(raw) }.getOrNull() }
-                                    JournalScreen(
-                                        onNavigateUp = { navController.popBackStack() },
-                                        initialDate = initialDate,
-                                        modifier = Modifier.fillMaxSize(),
-                                    )
-                                }
                             }
+
                         }
                     }
                 }
