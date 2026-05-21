@@ -37,9 +37,7 @@ class AppLockViewModel(
                 _isPreferenceReady.value = true
                 if (!enabled) {
                     _isUnlocked.value = true
-                } else {
-                    _isUnlocked.value = false
-                }
+                } 
             }
         }
     }
