@@ -1,3 +1,5 @@
+apply(from = "gradle/jdk-resolution.gradle.kts")
+
 pluginManagement {
     repositories {
         google {

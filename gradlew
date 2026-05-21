@@ -116,6 +116,47 @@ esac
 
 CLASSPATH="\\\"\\\""
 
+# Prefer a full JDK (with jlink) when JAVA_HOME points at an IDE JRE without jlink.
+# Optional overrides: jdk.local.properties (org.gradle.java.home) or local.properties (java.home).
+gradle_resolve_jdk_home() {
+    _explicit_jdk=""
+    if [ -f "$APP_HOME/jdk.local.properties" ]; then
+        _explicit_jdk=$(grep '^org.gradle.java.home=' "$APP_HOME/jdk.local.properties" 2>/dev/null | cut -d= -f2- | tr -d '\r')
+    fi
+    if [ -z "$_explicit_jdk" ] && [ -f "$APP_HOME/local.properties" ]; then
+        _explicit_jdk=$(grep '^java.home=' "$APP_HOME/local.properties" 2>/dev/null | cut -d= -f2- | tr -d '\r')
+    fi
+    if [ -n "$_explicit_jdk" ] && [ -x "$_explicit_jdk/bin/jlink" ]; then
+        printf '%s' "$_explicit_jdk"
+        return 0
+    fi
+    if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/jlink" ]; then
+        printf '%s' "$JAVA_HOME"
+        return 0
+    fi
+    for _candidate in \
+        "/Applications/Android Studio.app/Contents/jbr/Contents/Home" \
+        "/Applications/Android Studio Preview.app/Contents/jbr/Contents/Home" \
+        "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home" \
+        "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home" \
+        "/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home" \
+        "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home"
+    do
+        if [ -x "$_candidate/bin/jlink" ]; then
+            printf '%s' "$_candidate"
+            return 0
+        fi
+    done
+    if [ -n "$JAVA_HOME" ]; then
+        printf '%s' "$JAVA_HOME"
+    fi
+}
+
+_resolved_gradle_jdk=$(gradle_resolve_jdk_home)
+if [ -n "$_resolved_gradle_jdk" ]; then
+    JAVA_HOME=$_resolved_gradle_jdk
+    export JAVA_HOME
+fi
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
