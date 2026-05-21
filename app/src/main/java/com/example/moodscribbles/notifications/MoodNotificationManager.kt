@@ -11,6 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.example.moodscribbles.R
 import com.example.moodscribbles.ui.MainActivity
 import com.example.moodscribbles.ui.prototype.AppRoutes
+import kotlin.random.Random
 
 class MoodNotificationManager(
     private val context: Context,
@@ -18,12 +19,19 @@ class MoodNotificationManager(
 
     private val notificationManager = NotificationManagerCompat.from(context)
 
-    fun showDailyReminder() {
+    enum class ReminderType {
+        DAILY, INACTIVE, AUTO_OFF
+    }
+
+    fun showReminder(type: ReminderType) {
         ensureNotificationChannel()
+
+        val (title, text) = getMessage(type)
+
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(context.getString(R.string.notification_reminder_title))
-            .setContentText(context.getString(R.string.notification_reminder_text))
+            .setContentTitle(title)
+            .setContentText(text)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setAutoCancel(true)
@@ -31,6 +39,40 @@ class MoodNotificationManager(
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)
+    }
+
+    private fun getMessage(type: ReminderType): Pair<String, String> {
+        return when (type) {
+            ReminderType.AUTO_OFF -> {
+                context.getString(R.string.notif_auto_off_title) to context.getString(R.string.notif_auto_off_text)
+            }
+            ReminderType.INACTIVE -> {
+                val titles = listOf(
+                    R.string.notif_inactive_title_1,
+                    R.string.notif_inactive_title_2,
+                    R.string.notif_inactive_title_3
+                )
+                val texts = listOf(
+                    R.string.notif_inactive_text_1,
+                    R.string.notif_inactive_text_2,
+                    R.string.notif_inactive_text_3
+                )
+                context.getString(titles.random()) to context.getString(texts.random())
+            }
+            ReminderType.DAILY -> {
+                val titles = listOf(
+                    R.string.notif_daily_title_1,
+                    R.string.notif_daily_title_2,
+                    R.string.notif_daily_title_3
+                )
+                val texts = listOf(
+                    R.string.notif_daily_text_1,
+                    R.string.notif_daily_text_2,
+                    R.string.notif_daily_text_3
+                )
+                context.getString(titles.random()) to context.getString(texts.random())
+            }
+        }
     }
 
     private fun ensureNotificationChannel() {

@@ -134,6 +134,8 @@ fun SettingsTabScreen(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
             )
         }
+
+        // --- Actions ---
         item {
             Text(
                 text = stringResource(R.string.settings_section_actions),
@@ -161,7 +163,10 @@ fun SettingsTabScreen(
                 ),
             )
         }
+
         item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+        // --- Appearance ---
         item {
             Text(
                 text = stringResource(R.string.settings_section_appearance),
@@ -203,10 +208,13 @@ fun SettingsTabScreen(
                 }
             }
         }
+
         item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+        // --- Notifications ---
         item {
             Text(
-                text = stringResource(R.string.settings_section_privacy),
+                text = stringResource(R.string.settings_notifications_title),
                 style = MaterialTheme.typography.titleSmall,
                 color = colorScheme.primary,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
@@ -291,6 +299,18 @@ fun SettingsTabScreen(
                 ),
             )
         }
+
+        item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+        // --- Privacy ---
+        item {
+            Text(
+                text = stringResource(R.string.settings_section_privacy),
+                style = MaterialTheme.typography.titleSmall,
+                color = colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            )
+        }
         item {
             ListItem(
                 headlineContent = {
@@ -307,7 +327,10 @@ fun SettingsTabScreen(
                 ),
             )
         }
+
         item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+        // --- About ---
         item {
             ListItem(
                 headlineContent = {

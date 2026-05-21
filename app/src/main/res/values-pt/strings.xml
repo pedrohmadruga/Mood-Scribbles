@@ -184,4 +184,18 @@
     <string name="settings_reminder_time_picker_confirm">Definir</string>
     <string name="settings_reminder_time_picker_cancel">Cancelar</string>
     <string name="settings_reminder_permission_required">Permite notificações para ativar lembretes diários.</string>
+    <string name="notif_daily_title_1">Check-in Diário</string>
+    <string name="notif_daily_text_1">Como vai o seu dia? Reserve um segundo para registrar.</string>
+    <string name="notif_daily_title_2">Reflita por um momento.</string>
+    <string name="notif_daily_text_2">Uma entrada rápida ajuda a acompanhar seu progresso.</string>
+    <string name="notif_daily_title_3">Mood Check</string>
+    <string name="notif_daily_text_3">Pronto para registrar seu humor?</string>
+    <string name="notif_inactive_title_1">Sentimos sua falta!</string>
+    <string name="notif_inactive_text_1">Já faz um tempo desde sua última entrada. Como tem estado?</string>
+    <string name="notif_inactive_title_2">Seu diário está solitário</string>
+    <string name="notif_inactive_text_2">Não perca seu ritmo! Registre seu humor agora.</string>
+    <string name="notif_inactive_title_3">Check-in rápido</string>
+    <string name="notif_inactive_text_3">A correria do dia a dia é grande, mas não deixe de tirar um tempinho para você. Como foi seu dia?</string>
+    <string name="notif_auto_off_title">Vamos deixá-lo em paz</string>
+    <string name="notif_auto_off_text">Desativamos os lembretes diários por agora para respeitar seu espaço. Abra o app quando quiser voltar a registrar!</string>
 </resources>
