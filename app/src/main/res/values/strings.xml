@@ -172,4 +172,16 @@
     <string name="settings_about_dialog_title">About this app</string>
     <string name="settings_about_dialog_body">%1$s\nVersion %2$s</string>
     <string name="settings_about_ok">OK</string>
+    <string name="notification_channel_name">Mood reminders</string>
+    <string name="notification_channel_description">Daily reminders to log your mood</string>
+    <string name="notification_reminder_title">Time to log your mood!</string>
+    <string name="notification_reminder_text">Take a moment to reflect on your day.</string>
+    <string name="settings_notifications_summary">Daily reminder to open your journal</string>
+    <string name="settings_reminder_enabled">Daily mood reminder</string>
+    <string name="settings_reminder_time">Reminder time</string>
+    <string name="settings_reminder_time_value">%1$02d:%2$02d</string>
+    <string name="settings_reminder_time_picker_title">Choose reminder time</string>
+    <string name="settings_reminder_time_picker_confirm">Set</string>
+    <string name="settings_reminder_time_picker_cancel">Cancel</string>
+    <string name="settings_reminder_permission_required">Allow notifications to enable daily reminders.</string>
 </resources>

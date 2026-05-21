@@ -1,0 +1,7 @@
+# Copy this file to jdk.local.properties (gitignored) if Gradle fails with
+# "jlink executable ... does not exist" (common when an IDE sets JAVA_HOME to a JRE).
+#
+# Use a full JDK — Android Studio's bundled runtime is a good choice on macOS:
+# org.gradle.java.home=/Applications/Android Studio.app/Contents/jbr/Contents/Home
+#
+# Alternatively, add java.home=... to local.properties (also gitignored).

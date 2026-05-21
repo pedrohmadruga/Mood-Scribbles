@@ -7,6 +7,7 @@ import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
 import com.example.moodscribbles.data.preferences.appSettingsDataStore
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
+import com.example.moodscribbles.notifications.MoodReminderPreferenceRepository
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
@@ -30,6 +31,8 @@ val appModule = module {
     single<DataStore<Preferences>> { androidContext().appSettingsDataStore }
 
     single { ThemePreferenceRepository(dataStore = get()) }
+
+    single { MoodReminderPreferenceRepository(dataStore = get()) }
 
     single {
         Room.databaseBuilder(
@@ -86,7 +89,11 @@ val appModule = module {
     }
 
     viewModel {
-        SettingsViewModel(themePreferenceRepository = get())
+        SettingsViewModel(
+            themePreferenceRepository = get(),
+            moodReminderPreferenceRepository = get(),
+            appContext = androidContext(),
+        )
     }
 
     viewModel { (date: LocalDate) ->

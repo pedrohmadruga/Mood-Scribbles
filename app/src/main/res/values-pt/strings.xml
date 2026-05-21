@@ -172,4 +172,16 @@
     <string name="settings_about_dialog_title">Acerca desta app</string>
     <string name="settings_about_dialog_body">%1$s\nVersão %2$s</string>
     <string name="settings_about_ok">OK</string>
+    <string name="notification_channel_name">Lembretes de humor</string>
+    <string name="notification_channel_description">Lembretes diários para registar o seu humor</string>
+    <string name="notification_reminder_title">Hora de registar seu humor!</string>
+    <string name="notification_reminder_text">Reserve um momento para refletir sobre seu dia.</string>
+    <string name="settings_notifications_summary">Lembrete diário para abrir o diário</string>
+    <string name="settings_reminder_enabled">Lembrete diário de humor</string>
+    <string name="settings_reminder_time">Hora do lembrete</string>
+    <string name="settings_reminder_time_value">%1$02d:%2$02d</string>
+    <string name="settings_reminder_time_picker_title">Escolher hora do lembrete</string>
+    <string name="settings_reminder_time_picker_confirm">Definir</string>
+    <string name="settings_reminder_time_picker_cancel">Cancelar</string>
+    <string name="settings_reminder_permission_required">Permite notificações para ativar lembretes diários.</string>
 </resources>

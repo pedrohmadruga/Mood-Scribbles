@@ -1,5 +1,6 @@
 package com.example.moodscribbles.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -18,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moodscribbles.R
 import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
+import com.example.moodscribbles.notifications.MoodReminderIntentExtras
 import com.example.moodscribbles.ui.calendar.CalendarDayDetailScreen
 import com.example.moodscribbles.ui.journal.JournalScreen
 import com.example.moodscribbles.ui.prototype.AppRoutes
@@ -28,14 +31,32 @@ import org.koin.androidx.compose.KoinAndroidContext
 import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
+
+    private val pendingNavRoute = mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        pendingNavRoute.value = extractNavRoute(intent)
         val themePreferenceRepository = getKoin().get<ThemePreferenceRepository>()
         setContent {
             KoinAndroidContext {
                 MoodScribblesAppTheme(themePreferenceRepository = themePreferenceRepository) {
                     val navController = rememberNavController()
+                    val routeToHandle = pendingNavRoute.value
+                    LaunchedEffect(routeToHandle) {
+                        val route = routeToHandle ?: return@LaunchedEffect
+                        if (route == AppRoutes.FUNCTIONAL_JOURNAL) {
+                            navController.navigate(AppRoutes.functionalJournalRoute()) {
+                                popUpTo(AppRoutes.MAIN_TABS) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                        pendingNavRoute.value = null
+                    }
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                         NavHost(
                             navController = navController,
@@ -119,5 +140,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingNavRoute.value = extractNavRoute(intent)
+    }
+
+    private fun extractNavRoute(intent: Intent?): String? {
+        return intent?.getStringExtra(MoodReminderIntentExtras.EXTRA_NAV_ROUTE)
     }
 }
