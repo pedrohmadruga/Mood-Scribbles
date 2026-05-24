@@ -22,7 +22,7 @@
     <string name="journal_emotion_sad">Triste</string>
     <string name="journal_emotion_frustrated">Frustrado(a)</string>
     <string name="journal_tags_label">Tags</string>
-    <string name="journal_new_tag_label">Nova tag</string>
+    <string name="journal_new_tag_label">Nome da tag…</string>
     <string name="journal_add_tag">Adicionar</string>
     <string name="journal_tag_work">trabalho</string>
     <string name="journal_tag_family">família</string>
@@ -213,4 +213,7 @@
     <string name="day_detail_track_emotion_desc">Escolhe uma emoção principal</string>
     <string name="day_detail_track_tags_desc">Adiciona contexto como trabalho, família…</string>
     <string name="day_detail_track_notes_desc">Um título e uma entrada breve</string>
+    <string name="journal_tags_selected">%1$d selecionadas</string>
+    <string name="journal_tags_suggested">Sugeridas</string>
+    <string name="journal_notes_char_count">%1$d car.</string>
 </resources>

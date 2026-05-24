@@ -5,18 +5,18 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -192,18 +192,21 @@ fun SettingsTabScreen(
             )
         }
         item {
-            Row(
+            SingleChoiceSegmentedButtonRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                ThemeMode.entries.forEach { mode ->
-                    FilterChip(
+                ThemeMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
                         selected = themeMode == mode,
                         onClick = { viewModel.setThemeMode(mode) },
-                        label = { Text(text = themeModeLabel(mode)) },
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = ThemeMode.entries.size,
+                        ),
+                        icon = { SegmentedButtonDefaults.Icon(active = themeMode == mode) },
+                        label = { Text(text = themeModeIcon(mode)) },
                     )
                 }
             }
@@ -353,9 +356,8 @@ fun SettingsTabScreen(
     }
 }
 
-@Composable
-private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
-    ThemeMode.SYSTEM -> stringResource(R.string.settings_theme_system)
-    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
-    ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
+private fun themeModeIcon(mode: ThemeMode): String = when (mode) {
+    ThemeMode.SYSTEM -> "⚙️"
+    ThemeMode.LIGHT -> "☀️"
+    ThemeMode.DARK -> "🌙"
 }
