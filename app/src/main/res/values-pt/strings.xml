@@ -199,4 +199,18 @@
     <string name="notif_inactive_text_3">A correria do dia a dia é grande, mas não deixe de tirar um tempinho para você. Como foi seu dia?</string>
     <string name="notif_auto_off_title">Vamos deixá-lo em paz</string>
     <string name="notif_auto_off_text">Desativamos os lembretes diários por agora para respeitar seu espaço. Abra o app quando quiser voltar a registrar!</string>
+    <string name="day_detail_saved_badge">Guardado</string>
+    <string name="day_detail_energy_section">Energia</string>
+    <string name="day_detail_energy_of_100">%1$d /100</string>
+    <string name="day_detail_emotion_primary">emoção principal</string>
+    <string name="day_detail_diary_draft">Rascunho</string>
+    <string name="day_detail_diary_empty_hint">Sem título ou notas. Toca em editar para adicionar algo e recordar este dia.</string>
+    <string name="day_detail_empty_title">Ainda nada guardado</string>
+    <string name="day_detail_empty_desc">Regista como te sentes — o teu humor, energia e uma nota curta. É rápido.</string>
+    <string name="day_detail_you_can_track">Podes registar</string>
+    <string name="day_detail_track_mood_desc">De muito triste a muito feliz</string>
+    <string name="day_detail_track_energy_desc">Uma escala simples de 0 a 100</string>
+    <string name="day_detail_track_emotion_desc">Escolhe uma emoção principal</string>
+    <string name="day_detail_track_tags_desc">Adiciona contexto como trabalho, família…</string>
+    <string name="day_detail_track_notes_desc">Um título e uma entrada breve</string>
 </resources>
