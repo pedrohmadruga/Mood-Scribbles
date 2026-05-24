@@ -48,4 +48,8 @@ class CalendarViewModel(
     fun onNextMonth() {
         visibleMonth.update { it.plusMonths(1) }
     }
+
+    fun onMonthSelected(yearMonth: YearMonth) {
+        visibleMonth.update { yearMonth }
+    }
 }
