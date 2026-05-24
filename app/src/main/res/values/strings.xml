@@ -199,5 +199,18 @@
     <string name="notif_inactive_text_3">Life gets busy, but don\'t forget to prioritize your peace. How was your day?</string>
     <string name="notif_auto_off_title">We\'ll leave you to it</string>
     <string name="notif_auto_off_text">We\'ve turned off daily reminders for now to respect your space. Open the app anytime to start tracking again!</string>
-
+    <string name="day_detail_saved_badge">Saved</string>
+    <string name="day_detail_energy_section">Energy</string>
+    <string name="day_detail_energy_of_100">%1$d /100</string>
+    <string name="day_detail_emotion_primary">primary feeling</string>
+    <string name="day_detail_diary_draft">Draft</string>
+    <string name="day_detail_diary_empty_hint">No title or notes yet. Tap edit to add a few words and remember how this day felt.</string>
+    <string name="day_detail_empty_title">Nothing saved yet</string>
+    <string name="day_detail_empty_desc">Capture how today feels — your mood, energy and a short note. It only takes a minute.</string>
+    <string name="day_detail_you_can_track">You can track</string>
+    <string name="day_detail_track_mood_desc">From very sad to very happy</string>
+    <string name="day_detail_track_energy_desc">A simple 0–100 scale</string>
+    <string name="day_detail_track_emotion_desc">Pick a primary feeling</string>
+    <string name="day_detail_track_tags_desc">Add context like work, family…</string>
+    <string name="day_detail_track_notes_desc">A title and a short diary entry</string>
 </resources>
