@@ -58,6 +58,7 @@
     <string name="calendar_day_detail_no_notes">No title or notes</string>
     <string name="calendar_day_detail_title">Day detail</string>
     <string name="calendar_navigate_up_cd">Navigate up</string>
+    <string name="calendar_month_picker_title">Select month</string>
     <string name="history_screen_title">Journal history</string>
     <string name="history_filter_by_month">By month</string>
     <string name="history_filter_last_30_days">Last 30 days</string>
