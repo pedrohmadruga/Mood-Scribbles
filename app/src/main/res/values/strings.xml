@@ -160,7 +160,7 @@
     <string name="settings_new_journal_entry_summary">Open the official journal screen</string>
     <string name="settings_section_appearance">Appearance</string>
     <string name="settings_theme_headline">Theme</string>
-    <string name="settings_theme_supporting">Follow device uses system light/dark mode until you pick a fixed theme.</string>
+    <string name="settings_theme_supporting">Uses system light/dark mode when set to System, until you pick a fixed theme.</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
@@ -211,7 +211,7 @@
     <string name="day_detail_saved_badge">Saved</string>
     <string name="day_detail_energy_section">Energy</string>
     <string name="day_detail_energy_of_100">%1$d /100</string>
-    <string name="day_detail_emotion_primary">primary feeling</string>
+    <string name="day_detail_emotion_primary">Primary emotion</string>
     <string name="day_detail_diary_draft">Draft</string>
     <string name="day_detail_diary_empty_hint">No title or notes yet. Tap edit to add a few words and remember how this day felt.</string>
     <string name="day_detail_empty_title">Nothing saved yet</string>
@@ -224,5 +224,5 @@
     <string name="day_detail_track_notes_desc">A title and a short diary entry</string>
     <string name="journal_tags_selected">%1$d selected</string>
     <string name="journal_tags_suggested">Suggested</string>
-    <string name="journal_notes_char_count">%1$d chars</string>
+    <string name="journal_notes_char_count">%1$d characters</string>
 </resources>
