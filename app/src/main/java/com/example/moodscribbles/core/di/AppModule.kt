@@ -9,6 +9,7 @@ import com.example.moodscribbles.data.preferences.BiometricPreferenceRepository
 import com.example.moodscribbles.data.preferences.appSettingsDataStore
 import com.example.moodscribbles.data.security.BiometricAuthManager
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
+import com.example.moodscribbles.notifications.MoodReminderPreferenceRepository
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
 import com.example.moodscribbles.domain.repository.JournalRepository
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
@@ -37,6 +38,8 @@ val appModule = module {
     single { BiometricPreferenceRepository(dataStore = get()) }
 
     single { BiometricAuthManager(context = androidContext()) }
+
+    single { MoodReminderPreferenceRepository(dataStore = get()) }
 
     single {
         Room.databaseBuilder(
@@ -97,6 +100,8 @@ val appModule = module {
             themePreferenceRepository = get(),
             biometricPreferenceRepository = get(),
             biometricAuthManager = get(),
+            moodReminderPreferenceRepository = get(),
+            appContext = androidContext(),
         )
     }
 

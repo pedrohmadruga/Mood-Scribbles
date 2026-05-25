@@ -1,27 +1,32 @@
 package com.example.moodscribbles.ui.settings
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.BuildConfig
 import com.example.moodscribbles.R
 import com.example.moodscribbles.data.preferences.ThemeMode
+import com.example.moodscribbles.notifications.MoodReminderPermissionHelper
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -51,7 +57,10 @@ fun SettingsTabScreen(
 ) {
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val isBiometricLockEnabled by viewModel.isBiometricLockEnabled.collectAsStateWithLifecycle()
+    val reminderSettings by viewModel.moodReminderSettings.collectAsStateWithLifecycle()
     var showAbout by rememberSaveable { mutableStateOf(false) }
+    var showTimePicker by rememberSaveable { mutableStateOf(false) }
+    var permissionDeniedMessage by remember { mutableStateOf(false) }
     val colorScheme = MaterialTheme.colorScheme
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -61,6 +70,17 @@ fun SettingsTabScreen(
     val promptSubtitle = stringResource(R.string.biometric_prompt_subtitle)
     val unavailableMessage = stringResource(R.string.settings_biometric_unavailable)
 
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            viewModel.applyReminderEnabledAfterPermissionGranted()
+            permissionDeniedMessage = false
+        } else {
+            permissionDeniedMessage = true
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collectLatest { event ->
             when (event) {
@@ -68,6 +88,36 @@ fun SettingsTabScreen(
                     snackbarHostState.showSnackbar(event.message)
             }
         }
+    }
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = reminderSettings.hour,
+            initialMinute = reminderSettings.minute,
+            is24Hour = true,
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            title = { Text(text = stringResource(R.string.settings_reminder_time_picker_title)) },
+            text = {
+                TimePicker(state = timePickerState)
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.setReminderTime(timePickerState.hour, timePickerState.minute)
+                        showTimePicker = false
+                    },
+                ) {
+                    Text(text = stringResource(R.string.settings_reminder_time_picker_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(text = stringResource(R.string.settings_reminder_time_picker_cancel))
+                }
+            },
+        )
     }
 
     if (showAbout) {
@@ -107,6 +157,8 @@ fun SettingsTabScreen(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
                 )
             }
+
+            // --- Actions ---
             item {
                 Text(
                     text = stringResource(R.string.settings_section_actions),
@@ -134,7 +186,10 @@ fun SettingsTabScreen(
                     ),
                 )
             }
+
             item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+            // --- Appearance ---
             item {
                 Text(
                     text = stringResource(R.string.settings_section_appearance),
@@ -160,26 +215,32 @@ fun SettingsTabScreen(
                 )
             }
             item {
-                Row(
+                SingleChoiceSegmentedButtonRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    ThemeMode.entries.forEach { mode ->
-                        FilterChip(
+                    ThemeMode.entries.forEachIndexed { index, mode ->
+                        SegmentedButton(
                             selected = themeMode == mode,
                             onClick = { viewModel.setThemeMode(mode) },
-                            label = { Text(text = themeModeLabel(mode)) },
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = ThemeMode.entries.size,
+                            ),
+                            icon = { SegmentedButtonDefaults.Icon(active = themeMode == mode) },
+                            label = { Text(text = themeModeIcon(mode)) },
                         )
                     }
                 }
             }
+
             item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+            // --- Notifications ---
             item {
                 Text(
-                    text = stringResource(R.string.settings_section_privacy),
+                    text = stringResource(R.string.settings_notifications_title),
                     style = MaterialTheme.typography.titleSmall,
                     color = colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
@@ -188,17 +249,92 @@ fun SettingsTabScreen(
             item {
                 ListItem(
                     headlineContent = {
-                        Text(text = stringResource(R.string.settings_notifications_title))
+                        Text(text = stringResource(R.string.settings_reminder_enabled))
                     },
                     supportingContent = {
+                        val supporting = when {
+                            permissionDeniedMessage ->
+                                stringResource(R.string.settings_reminder_permission_required)
+                            else -> stringResource(R.string.settings_notifications_summary)
+                        }
                         Text(
-                            text = stringResource(R.string.settings_feature_coming_soon),
+                            text = supporting,
                             style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = reminderSettings.enabled,
+                            onCheckedChange = { enabled ->
+                                if (!enabled) {
+                                    permissionDeniedMessage = false
+                                    viewModel.setReminderEnabled(
+                                        enabled = false,
+                                        hasNotificationPermission = true,
+                                    )
+                                    return@Switch
+                                }
+                                val hasPermission = MoodReminderPermissionHelper
+                                    .hasNotificationPermission(context)
+                                if (hasPermission) {
+                                    permissionDeniedMessage = false
+                                    viewModel.setReminderEnabled(
+                                        enabled = true,
+                                        hasNotificationPermission = true,
+                                    )
+                                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    notificationPermissionLauncher.launch(
+                                        Manifest.permission.POST_NOTIFICATIONS,
+                                    )
+                                } else {
+                                    viewModel.setReminderEnabled(
+                                        enabled = true,
+                                        hasNotificationPermission = true,
+                                    )
+                                }
+                            },
                         )
                     },
                     colors = ListItemDefaults.colors(
                         containerColor = colorScheme.surface,
                     ),
+                )
+            }
+            item {
+                ListItem(
+                    headlineContent = {
+                        Text(text = stringResource(R.string.settings_reminder_time))
+                    },
+                    supportingContent = {
+                        Text(
+                            text = stringResource(
+                                R.string.settings_reminder_time_value,
+                                reminderSettings.hour,
+                                reminderSettings.minute,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = reminderSettings.enabled) {
+                            showTimePicker = true
+                        },
+                    colors = ListItemDefaults.colors(
+                        containerColor = colorScheme.surface,
+                    ),
+                )
+            }
+
+            item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+            // --- Privacy ---
+            item {
+                Text(
+                    text = stringResource(R.string.settings_section_privacy),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 )
             }
             item {
@@ -246,7 +382,10 @@ fun SettingsTabScreen(
                     ),
                 )
             }
+
             item { HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp)) }
+
+            // --- About ---
             item {
                 ListItem(
                     headlineContent = {
@@ -275,9 +414,8 @@ fun SettingsTabScreen(
     }
 }
 
-@Composable
-private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
-    ThemeMode.SYSTEM -> stringResource(R.string.settings_theme_system)
-    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
-    ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
+private fun themeModeIcon(mode: ThemeMode): String = when (mode) {
+    ThemeMode.SYSTEM -> "⚙️"
+    ThemeMode.LIGHT -> "☀️"
+    ThemeMode.DARK -> "🌙"
 }

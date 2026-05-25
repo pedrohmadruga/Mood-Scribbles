@@ -15,17 +15,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +46,6 @@ import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
@@ -68,15 +72,10 @@ fun MonthlyCalendarScreen(
     viewModel: CalendarViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     val visibleMonth = uiState.visibleMonth
-
     val fabLabel = stringResource(R.string.calendar_fab_today_content_description)
     val prevMonthCd = stringResource(R.string.calendar_prev_month_cd)
     val nextMonthCd = stringResource(R.string.calendar_next_month_cd)
-    val monthTitleFormatter = remember {
-        DateTimeFormatter.ofPattern("LLLL yyyy", Locale.getDefault())
-    }
     val weekFields = remember { WeekFields.of(Locale.getDefault()) }
     val weekdayLabels = remember(weekFields) {
         generateSequence(weekFields.firstDayOfWeek) { it.plus(1) }
@@ -88,12 +87,17 @@ fun MonthlyCalendarScreen(
     val today = LocalDate.now()
     val colorScheme = MaterialTheme.colorScheme
 
-    fun onFabClick() {
-        if (YearMonth.from(today) == visibleMonth) {
-            onOpenDayDetail(today)
-        } else {
-            onOpenJournalForDate(today)
-        }
+    var showMonthPicker by rememberSaveable { mutableStateOf(false) }
+
+    if (showMonthPicker) {
+        MonthYearPickerDialog(
+            current = visibleMonth,
+            onConfirm = { selected ->
+                viewModel.onMonthSelected(selected)
+                showMonthPicker = false
+            },
+            onDismiss = { showMonthPicker = false },
+        )
     }
 
     Scaffold(
@@ -102,15 +106,18 @@ fun MonthlyCalendarScreen(
         contentColor = colorScheme.onBackground,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onFabClick() },
+                onClick = {
+                    if (YearMonth.from(today) == visibleMonth) {
+                        onOpenDayDetail(today)
+                    } else {
+                        onOpenJournalForDate(today)
+                    }
+                },
                 modifier = Modifier.semantics { contentDescription = fabLabel },
                 containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimary,
             ) {
-                Text(
-                    text = "+",
-                    style = MaterialTheme.typography.headlineMedium,
-                )
+                Text(text = "+", style = MaterialTheme.typography.headlineMedium)
             }
         },
         floatingActionButtonPosition = FabPosition.Center,
@@ -144,14 +151,16 @@ fun MonthlyCalendarScreen(
                 ) {
                     Text("<", color = colorScheme.primary)
                 }
-                Text(
-                    text = visibleMonth.format(monthTitleFormatter)
-                        .replaceFirstChar { ch ->
-                            if (ch.isLowerCase()) ch.titlecase(Locale.getDefault()) else ch.toString()
-                        },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = colorScheme.onBackground,
-                )
+                TextButton(onClick = { showMonthPicker = true }) {
+                    Text(
+                        text = visibleMonth.month
+                            .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } +
+                            " ${visibleMonth.year}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = colorScheme.onBackground,
+                    )
+                }
                 TextButton(
                     onClick = { viewModel.onNextMonth() },
                     modifier = Modifier.semantics { contentDescription = nextMonthCd },
@@ -189,29 +198,17 @@ fun MonthlyCalendarScreen(
                 ) { index ->
                     val cellDate = gridCells[index]
                     if (cellDate == null) {
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(12.dp)),
-                        )
+                        Box(modifier = Modifier.aspectRatio(1f).clip(RoundedCornerShape(12.dp)))
                     } else {
                         val entry = uiState.entriesByDate[cellDate]
                         val isToday = cellDate == today
                         val cellBackground = if (entry != null) {
-                            lerp(
-                                colorScheme.surfaceVariant,
-                                entry.mood.calendarTint(),
-                                0.58f,
-                            )
+                            lerp(colorScheme.surfaceVariant, entry.mood.calendarTint(), 0.58f)
                         } else {
                             colorScheme.surfaceVariant
                         }
                         val borderModifier = if (entry != null) {
-                            Modifier.border(
-                                1.5.dp,
-                                colorScheme.outline,
-                                RoundedCornerShape(12.dp),
-                            )
+                            Modifier.border(1.5.dp, colorScheme.outline, RoundedCornerShape(12.dp))
                         } else {
                             Modifier
                         }
@@ -229,14 +226,10 @@ fun MonthlyCalendarScreen(
                                     text = cellDate.dayOfMonth.toString(),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = if (isToday) colorScheme.primary else colorScheme.onSurface,
-                                    modifier = Modifier.align(Alignment.CenterHorizontally),
                                 )
                                 Text(
-                                    text = if (entry != null) {
-                                        entry.mood.calendarEmoji()
-                                    } else {
-                                        stringResource(R.string.calendar_empty_day_symbol)
-                                    },
+                                    text = if (entry != null) entry.mood.calendarEmoji()
+                                    else stringResource(R.string.calendar_empty_day_symbol),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = colorScheme.onSurfaceVariant,
                                 )
@@ -247,4 +240,81 @@ fun MonthlyCalendarScreen(
             }
         }
     }
+}
+
+@Composable
+private fun MonthYearPickerDialog(
+    current: YearMonth,
+    onConfirm: (YearMonth) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var selectedYear by rememberSaveable { mutableStateOf(current.year) }
+    var selectedMonth by rememberSaveable { mutableStateOf(current.monthValue) }
+    val colorScheme = MaterialTheme.colorScheme
+    val months = remember {
+        (1..12).map { m ->
+            YearMonth.of(2000, m).month
+                .getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.calendar_month_picker_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onClick = { selectedYear-- }) {
+                        Text("<", color = colorScheme.primary)
+                    }
+                    Text(
+                        text = selectedYear.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = colorScheme.onBackground,
+                    )
+                    TextButton(onClick = { selectedYear++ }) {
+                        Text(">", color = colorScheme.primary)
+                    }
+                }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(12) { index ->
+                        val monthNum = index + 1
+                        val isSelected = monthNum == selectedMonth
+                        Surface(
+                            shape = CircleShape,
+                            color = if (isSelected) colorScheme.primary else colorScheme.surfaceVariant,
+                            modifier = Modifier.clickable { selectedMonth = monthNum },
+                        ) {
+                            Text(
+                                text = months[index],
+                                style = MaterialTheme.typography.labelMedium,
+                                color = if (isSelected) colorScheme.onPrimary else colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(vertical = 8.dp),
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(YearMonth.of(selectedYear, selectedMonth)) }) {
+                Text(stringResource(R.string.journal_date_picker_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.journal_date_picker_cancel))
+            }
+        },
+    )
 }
