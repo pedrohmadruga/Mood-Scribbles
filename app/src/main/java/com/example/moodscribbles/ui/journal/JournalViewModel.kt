@@ -8,8 +8,11 @@ import com.example.moodscribbles.domain.Tag
 import com.example.moodscribbles.domain.usecase.CreateJournalEntryUseCase
 import com.example.moodscribbles.domain.usecase.GetJournalEntryByDateUseCase
 import com.example.moodscribbles.domain.usecase.UpdateJournalEntryUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,8 +25,11 @@ class JournalViewModel(
     private val updateJournalEntry: UpdateJournalEntryUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(JournalUiState()) // internal state (mutable) to store the UI state
-    val uiState: StateFlow<JournalUiState> = _uiState.asStateFlow() // public state (immutable) to observe the UI state
+    private val _uiState = MutableStateFlow(JournalUiState())
+    val uiState: StateFlow<JournalUiState> = _uiState.asStateFlow()
+
+    private val _navigateBack = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val navigateBack: SharedFlow<Unit> = _navigateBack.asSharedFlow()
 
     init {
         loadForDate(LocalDate.now()) // loads the journal entry for the current date
@@ -159,7 +165,10 @@ class JournalViewModel(
             // If the entry is existing, update it in the database. Otherwise, create it.
             if (snapshot.isExistingEntry) {
                 when (val result = updateJournalEntry(entry)) {
-                    UpdateJournalEntryUseCase.Result.Success -> applyPersistedSnapshot(snapshot.date)
+                    UpdateJournalEntryUseCase.Result.Success -> {
+                        applyPersistedSnapshot(snapshot.date)
+                        _navigateBack.emit(Unit)
+                    }
                     is UpdateJournalEntryUseCase.Result.ValidationError -> {
                         _uiState.update {
                             it.copy(
@@ -176,7 +185,10 @@ class JournalViewModel(
                 }
             } else {
                 when (val result = createJournalEntry(entry)) {
-                    is CreateJournalEntryUseCase.Result.Success -> applyPersistedSnapshot(snapshot.date)
+                    is CreateJournalEntryUseCase.Result.Success -> {
+                        applyPersistedSnapshot(snapshot.date)
+                        _navigateBack.emit(Unit)
+                    }
                     is CreateJournalEntryUseCase.Result.ValidationError -> {
                         _uiState.update {
                             it.copy(

@@ -5,7 +5,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.example.moodscribbles.data.local.AppDatabase
 import com.example.moodscribbles.data.preferences.ThemePreferenceRepository
+import com.example.moodscribbles.data.preferences.BiometricPreferenceRepository
 import com.example.moodscribbles.data.preferences.appSettingsDataStore
+import com.example.moodscribbles.data.security.BiometricAuthManager
 import com.example.moodscribbles.data.repository.JournalRepositoryImpl
 import com.example.moodscribbles.notifications.MoodReminderPreferenceRepository
 import com.example.moodscribbles.domain.metrics.JournalMetricsCalculator
@@ -19,6 +21,7 @@ import com.example.moodscribbles.ui.calendar.CalendarViewModel
 import com.example.moodscribbles.ui.history.JournalHistoryViewModel
 import com.example.moodscribbles.ui.journal.JournalViewModel
 import com.example.moodscribbles.ui.settings.SettingsViewModel
+import com.example.moodscribbles.ui.security.AppLockViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -31,6 +34,10 @@ val appModule = module {
     single<DataStore<Preferences>> { androidContext().appSettingsDataStore }
 
     single { ThemePreferenceRepository(dataStore = get()) }
+
+    single { BiometricPreferenceRepository(dataStore = get()) }
+
+    single { BiometricAuthManager(context = androidContext()) }
 
     single { MoodReminderPreferenceRepository(dataStore = get()) }
 
@@ -91,6 +98,8 @@ val appModule = module {
     viewModel {
         SettingsViewModel(
             themePreferenceRepository = get(),
+            biometricPreferenceRepository = get(),
+            biometricAuthManager = get(),
             moodReminderPreferenceRepository = get(),
             appContext = androidContext(),
         )
@@ -98,5 +107,12 @@ val appModule = module {
 
     viewModel { (date: LocalDate) ->
         CalendarDayDetailViewModel(journalRepository = get(), date = date)
+    }
+
+    viewModel {
+        AppLockViewModel(
+            biometricPreferenceRepository = get(),
+            biometricAuthManager = get(),
+        )
     }
 }
