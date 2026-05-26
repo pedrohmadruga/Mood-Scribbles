@@ -170,6 +170,10 @@
     <string name="settings_biometric_summary_off">Require unlock when opening the app</string>
     <string name="settings_biometric_summary_on">App lock is enabled</string>
     <string name="settings_biometric_unavailable">Set up biometrics or a screen lock on your device first</string>
+    <string name="settings_privacy_policy_title">Privacy Policy</string>
+    <string name="settings_privacy_policy_summary">How MoodScribbles handles your data</string>
+    <string name="settings_privacy_policy_url" translatable="false">https://moodscribbles-privacy.netlify.app/</string>
+    <string name="settings_privacy_policy_open_failed">Could not open the privacy policy. Check that a browser is installed.</string>
     <string name="settings_feature_coming_soon">Coming in a future update</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_summary">App name and version</string>

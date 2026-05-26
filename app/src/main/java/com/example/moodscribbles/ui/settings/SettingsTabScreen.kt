@@ -1,6 +1,8 @@
 package com.example.moodscribbles.ui.settings
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +49,7 @@ import com.example.moodscribbles.R
 import com.example.moodscribbles.data.preferences.ThemeMode
 import com.example.moodscribbles.notifications.MoodReminderPermissionHelper
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,12 +67,14 @@ fun SettingsTabScreen(
     var permissionDeniedMessage by remember { mutableStateOf(false) }
     val colorScheme = MaterialTheme.colorScheme
     val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val fragmentActivity = context as? FragmentActivity
 
     val promptTitle = stringResource(R.string.biometric_prompt_title)
     val promptSubtitle = stringResource(R.string.biometric_prompt_subtitle)
     val unavailableMessage = stringResource(R.string.settings_biometric_unavailable)
+    val privacyPolicyUrl = stringResource(R.string.settings_privacy_policy_url)
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -377,6 +383,35 @@ fun SettingsTabScreen(
                             enabled = switchEnabled,
                         )
                     },
+                    colors = ListItemDefaults.colors(
+                        containerColor = colorScheme.surface,
+                    ),
+                )
+            }
+            item {
+                ListItem(
+                    headlineContent = {
+                        Text(text = stringResource(R.string.settings_privacy_policy_title))
+                    },
+                    supportingContent = {
+                        Text(
+                            text = stringResource(R.string.settings_privacy_policy_summary),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(privacyPolicyUrl))
+                            runCatching { context.startActivity(intent) }
+                                .onFailure {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            context.getString(R.string.settings_privacy_policy_open_failed),
+                                        )
+                                    }
+                                }
+                        },
                     colors = ListItemDefaults.colors(
                         containerColor = colorScheme.surface,
                     ),

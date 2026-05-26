@@ -170,6 +170,9 @@
     <string name="settings_biometric_summary_off">Exigir desbloqueio ao abrir o app</string>
     <string name="settings_biometric_summary_on">Bloqueio do app ativado</string>
     <string name="settings_biometric_unavailable">Configure biometria ou bloqueio de tela no celular primeiro</string>
+    <string name="settings_privacy_policy_title">Política de privacidade</string>
+    <string name="settings_privacy_policy_summary">Como o MoodScribbles trata seus dados</string>
+    <string name="settings_privacy_policy_open_failed">Não foi possível abrir a política de privacidade. Verifique se há um navegador instalado.</string>
     <string name="settings_feature_coming_soon">Disponível em uma atualização futura</string>
     <string name="settings_about_title">Sobre</string>
     <string name="settings_about_summary">Nome e versão do app</string>
