@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.R
+import com.example.moodscribbles.ui.localizedEmotionLabel
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.Mood
 import com.example.moodscribbles.domain.Tag
@@ -614,17 +615,6 @@ private fun TagChip(tag: Tag) {
             color = colorScheme.onSurfaceVariant,
         )
     }
-}
-
-@Composable
-private fun localizedEmotionLabel(rawName: String): String = when (rawName.trim().lowercase()) {
-    "happy" -> stringResource(R.string.journal_emotion_happy)
-    "content" -> stringResource(R.string.journal_emotion_content)
-    "neutral" -> stringResource(R.string.journal_emotion_neutral)
-    "anxious" -> stringResource(R.string.journal_emotion_anxious)
-    "sad" -> stringResource(R.string.journal_emotion_sad)
-    "frustrated" -> stringResource(R.string.journal_emotion_frustrated)
-    else -> rawName
 }
 
 @Composable

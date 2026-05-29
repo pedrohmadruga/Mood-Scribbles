@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moodscribbles.R
+import com.example.moodscribbles.ui.localizedEmotionLabel
 import com.example.moodscribbles.domain.Emotion
 import com.example.moodscribbles.domain.JournalEntry
 import com.example.moodscribbles.domain.JournalEntryRuleViolation
@@ -629,17 +630,6 @@ private fun moodLabel(mood: Mood): String = when (mood) {
     Mood.NEUTRAL -> stringResource(R.string.mood_neutral)
     Mood.HAPPY -> stringResource(R.string.mood_happy)
     Mood.VERY_HAPPY -> stringResource(R.string.mood_very_happy)
-}
-
-@Composable
-private fun localizedEmotionLabel(rawName: String): String = when (rawName.trim().lowercase()) {
-    "happy" -> stringResource(R.string.journal_emotion_happy)
-    "content" -> stringResource(R.string.journal_emotion_content)
-    "neutral" -> stringResource(R.string.journal_emotion_neutral)
-    "anxious" -> stringResource(R.string.journal_emotion_anxious)
-    "sad" -> stringResource(R.string.journal_emotion_sad)
-    "frustrated" -> stringResource(R.string.journal_emotion_frustrated)
-    else -> rawName
 }
 
 @Composable

@@ -35,13 +35,12 @@ import androidx.compose.ui.unit.dp
 import com.example.moodscribbles.R
 import com.example.moodscribbles.domain.metrics.DashboardMetrics
 import com.example.moodscribbles.domain.metrics.EmotionFrequency
+import com.example.moodscribbles.ui.localizedEmotionLabel
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
-
 @Composable
 fun DashboardSection(
     metrics: DashboardMetrics,
@@ -404,9 +403,7 @@ private fun EmotionFrequencyRow(
     row: EmotionFrequency,
     colorScheme: ColorScheme,
 ) {
-    val label = row.emotionName.replaceFirstChar { ch ->
-        if (ch.isLowerCase()) ch.titlecase(Locale.getDefault()) else ch.toString()
-    }
+    val label = localizedEmotionLabel(row.emotionName)
     Row(
         modifier = Modifier
             .fillMaxWidth()
